@@ -76,4 +76,37 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+  
+  /* 纸质照片风格 - 覆盖prose默认样式 */
+  .prose img {
+    background: white !important;
+    padding: 12px !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1) !important;
+    transform: rotate(-0.5deg) !important;
+    transition: transform 0.3s ease !important;
+    cursor: pointer !important;
+    
+    /* 固定画框 - 4:3比例 */
+    width: 100% !important;
+    max-width: 600px !important;
+    height: 400px !important;
+    object-fit: cover !important;
+    border-radius: 2px !important;
+    margin: 20px auto !important;
+    display: block !important;
+  }
+  
+  .prose img:hover {
+    transform: rotate(0deg) scale(1.02) !important;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
+  }
+  
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .prose img {
+      height: 250px !important;
+      max-width: 400px !important;
+      padding: 8px !important;
+    }
+  }
 }
