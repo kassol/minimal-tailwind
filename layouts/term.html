@@ -88,7 +88,7 @@
       {{ end }}
       
       {{ range .Paginator.Pagers }}
-      {{ if eq .PageNumber .Paginator.PageNumber }}
+      {{ if eq .PageNumber $.Paginator.PageNumber }}
       <li>
         <span class="flex items-center justify-center w-10 h-10 bg-wine-600 text-white rounded-lg font-medium">{{ .PageNumber }}</span>
       </li>
