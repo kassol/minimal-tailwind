@@ -125,18 +125,10 @@
     @apply text-wine-600 bg-wine-50 font-medium;
   }
   
-  /* 移动端TOC折叠 */
+  /* 移动端TOC样式 */
   @media (max-width: 1023px) {
     .toc-nav {
       @apply bg-gray-50 border border-gray-200 rounded-lg p-4;
-    }
-    
-    .toc-content {
-      display: none;
-    }
-    
-    .toc-content.show {
-      display: block;
     }
   }
   

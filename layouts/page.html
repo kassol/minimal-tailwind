@@ -56,14 +56,16 @@
   </header>
   
   <!-- Main Content Layout with TOC -->
-  <div class="lg:flex lg:gap-12">
-    <!-- Article Content -->
-    <div class="flex-1 prose prose-lg max-w-none prose-headings:text-black prose-a:text-wine-600 prose-a:no-underline hover:prose-a:text-wine-700 prose-strong:text-black prose-code:text-wine-600 prose-code:bg-wine-50 prose-blockquote:border-wine-600 prose-blockquote:text-gray-700">
-      {{ .Content }}
+  <div class="flex flex-col lg:flex-row lg:gap-12">
+    <!-- Table of Contents (Mobile: Top, Desktop: Right Sidebar) -->
+    <div class="order-1 lg:order-2">
+      {{ partial "toc.html" . }}
     </div>
     
-    <!-- Table of Contents (Desktop: Right Sidebar, Mobile: Collapsible) -->
-    {{ partial "toc.html" . }}
+    <!-- Article Content -->
+    <div class="order-2 lg:order-1 flex-1 prose prose-lg max-w-none prose-headings:text-black prose-a:text-wine-600 prose-a:no-underline hover:prose-a:text-wine-700 prose-strong:text-black prose-code:text-wine-600 prose-code:bg-wine-50 prose-blockquote:border-wine-600 prose-blockquote:text-gray-700">
+      {{ .Content }}
+    </div>
   </div>
   
   <!-- Tags -->
