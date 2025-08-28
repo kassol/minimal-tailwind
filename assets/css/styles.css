@@ -13,10 +13,6 @@
     @apply bg-white text-black;
   }
   
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-medium text-black;
-  }
-  
   a {
     @apply text-wine-600 hover:text-wine-700 transition-colors;
   }
@@ -35,6 +31,11 @@
   
   blockquote {
     @apply border-l-4 border-wine-600 pl-4 italic text-gray-600 my-4;
+  }
+  
+  /* 全局强制覆盖prose插件 */
+  .prose * {
+    font-weight: 400 !important;
   }
 }
 
