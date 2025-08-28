@@ -28,4 +28,100 @@ document.addEventListener('DOMContentLoaded', function() {
       closeEffect: 'fade'
     });
   }
+  
+  // TOC功能初始化
+  initTableOfContents();
 });
+
+function initTableOfContents() {
+  const tocNav = document.getElementById('toc-nav');
+  const tocToggle = document.getElementById('toc-toggle');
+  const tocContent = document.getElementById('toc-content');
+  
+  if (!tocNav) return; // 如果没有TOC，退出
+  
+  // 移动端TOC折叠功能
+  if (tocToggle && tocContent) {
+    tocToggle.addEventListener('click', function() {
+      tocContent.classList.toggle('show');
+    });
+  }
+  
+  // 获取所有标题和TOC链接
+  const headings = document.querySelectorAll('.prose h2, .prose h3, .prose h4');
+  const tocLinks = tocNav.querySelectorAll('a');
+  
+  if (headings.length === 0 || tocLinks.length === 0) return;
+  
+  // 为每个标题添加ID（如果没有的话）
+  headings.forEach((heading, index) => {
+    if (!heading.id) {
+      heading.id = `heading-${index}`;
+    }
+  });
+  
+  // 平滑滚动
+  tocLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').substring(1);
+      const targetElement = document.getElementById(targetId);
+      
+      if (targetElement) {
+        const offsetTop = targetElement.offsetTop - 80; // 80px offset for header
+        window.scrollTo({
+          top: offsetTop,
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+  
+  // 滚动高亮当前章节
+  function updateTocHighlight() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    
+    let currentHeading = null;
+    
+    // 找到当前可见的标题
+    for (let i = headings.length - 1; i >= 0; i--) {
+      const heading = headings[i];
+      const headingTop = heading.offsetTop - 100; // 100px offset
+      
+      if (scrollTop >= headingTop) {
+        currentHeading = heading;
+        break;
+      }
+    }
+    
+    // 更新TOC链接的active状态
+    tocLinks.forEach(link => {
+      link.classList.remove('active');
+      
+      if (currentHeading) {
+        const href = link.getAttribute('href');
+        if (href === `#${currentHeading.id}`) {
+          link.classList.add('active');
+        }
+      }
+    });
+  }
+  
+  // 监听滚动事件，使用节流优化性能
+  let ticking = false;
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        updateTocHighlight();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+  
+  window.addEventListener('scroll', onScroll);
+  
+  // 初始化时也调用一次
+  updateTocHighlight();
+}

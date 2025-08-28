@@ -83,6 +83,63 @@
     overflow: hidden;
   }
   
+  /* TOC样式 - Wine色彩系统 */
+  .toc-nav {
+    @apply lg:w-64 lg:flex-shrink-0 lg:sticky lg:top-8 lg:self-start mb-8 lg:mb-0;
+  }
+  
+  .toc-header {
+    @apply flex items-center justify-between pb-3 border-b border-gray-200 mb-4;
+  }
+  
+  .toc-title {
+    @apply text-lg font-medium text-black;
+  }
+  
+  .toc-toggle {
+    @apply text-gray-600 hover:text-wine-600 p-1 rounded;
+  }
+  
+  .toc-content {
+    @apply lg:block;
+  }
+  
+  /* TOC列表样式 */
+  .toc-nav ul {
+    @apply list-none p-0 m-0 space-y-1;
+  }
+  
+  .toc-nav ul ul {
+    @apply ml-4 mt-1 space-y-1;
+  }
+  
+  .toc-nav li {
+    @apply m-0;
+  }
+  
+  .toc-nav a {
+    @apply block py-1 px-2 text-sm text-gray-400 hover:text-wine-600 hover:bg-wine-50 rounded transition-all duration-200 no-underline;
+  }
+  
+  .toc-nav a.active {
+    @apply text-wine-600 bg-wine-50 font-medium;
+  }
+  
+  /* 移动端TOC折叠 */
+  @media (max-width: 1023px) {
+    .toc-nav {
+      @apply bg-gray-50 border border-gray-200 rounded-lg p-4;
+    }
+    
+    .toc-content {
+      display: none;
+    }
+    
+    .toc-content.show {
+      display: block;
+    }
+  }
+  
   /* 纸质照片风格 - 覆盖prose默认样式 */
   .prose img {
     background: white !important;
