@@ -47,7 +47,7 @@
 
 @layer components {
   .btn {
-    @apply px-4 py-2 bg-wine-600 text-white rounded-lg hover:bg-wine-700 transition-colors;
+    @apply px-4 py-2 bg-wine-500 text-white rounded-lg hover:bg-wine-600 hover:text-white transition-colors;
   }
   
   .btn-outline {

@@ -1,57 +1,26 @@
 {{ define "main" }}
-  <!-- Hero Section -->
-  <div class="border-l-4 border-wine-600 pl-6 py-8 mb-12">
-    <h1 class="text-3xl mb-4 text-black">欢迎来到我的博客</h1>
-    <p class="text-lg text-gray-600">{{ site.Params.description | default "简洁优雅的技术分享" }}</p>
-  </div>
-  
-  <!-- Categories Section -->
-  <div class="mb-12">
-    <h2 class="text-xl mb-6 text-black">文章分类</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {{ range $key, $value := site.Taxonomies.categories }}
-      <div class="card p-6">
-        <h3 class="text-base mb-2">
-          <a href="{{ $value.Page.RelPermalink }}" class="text-black hover:text-wine-600 transition-colors">
-            {{ $key }}
-          </a>
-        </h3>
-        <p class="text-gray-500 text-sm">{{ len $value }} 篇文章</p>
-      </div>
-      {{ end }}
-    </div>
-  </div>
-  
-  <!-- Recent Posts Section -->
-  <div>
-    <h2 class="text-xl mb-6 text-black">最新文章</h2>
-    <div class="space-y-4">
-      {{ range first 10 (where site.RegularPages "Type" "in" (slice "posts" "post")) }}
-      <div class="flex items-center justify-between py-3 border-b border-gray-100">
-        <div class="flex-1">
-          <h3 class="text-base">
+  <!-- 最近文章列表 - 居中 -->
+  <div class="mb-12 flex justify-center">
+    <div class="w-full">
+      <div class="space-y-3">
+        {{ range first 10 (where site.RegularPages "Type" "in" (slice "posts" "post")) }}
+        <div class="flex items-center justify-center">
+          <div class="flex-1 text-right pr-8">
             <a href="{{ .RelPermalink }}" class="text-black hover:text-wine-600 transition-colors">
               {{ .Title }}
             </a>
-          </h3>
-          {{ with .Params.categories }}
-          <div class="flex items-center mt-1">
-            {{ range . }}
-            <span class="text-sm text-gray-500 mr-2">{{ . }}</span>
-            {{ end }}
           </div>
-          {{ end }}
+          <div class="flex-1 text-left text-sm text-gray-400 whitespace-nowrap">
+            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time>
+          </div>
         </div>
-        <div class="text-sm text-gray-500 ml-4 whitespace-nowrap">
-          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time>
-        </div>
+        {{ end }}
       </div>
-      {{ end }}
     </div>
   </div>
   
-  <!-- View All Posts Button -->
-  <div class="text-center mt-12">
+  <!-- 查看所有文章按钮 - 居中 -->
+  <div class="text-center mt-10">
     <a href="/posts/" class="btn">
       查看所有文章
     </a>

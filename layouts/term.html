@@ -1,8 +1,8 @@
 {{ define "main" }}
-<div class="max-w-6xl mx-auto px-6">
+<div class="w-[80%] mx-auto px-6">
   <!-- Page Header -->
   <header class="mb-12">
-    <div class="border-l-4 border-wine-600 pl-6 py-8">
+    <div class="border-l-4 border-wine-600 pl-6 py-4">
       <div class="inline-flex items-center px-4 py-2 bg-wine-100 text-wine-700 rounded-full text-sm font-medium mb-4">
         {{ if eq .Type "categories" }}
         分类
@@ -12,7 +12,7 @@
         {{ .Type }}
         {{ end }}
       </div>
-      <h1 class="text-3xl text-black mb-4">{{ .Title }}</h1>
+      <h1 class="text-xl text-black mb-4">{{ .Title }}</h1>
       <p class="text-lg text-gray-600">
         共找到 <span class="text-wine-600">{{ len .Pages }}</span> 篇相关文章
       </p>
