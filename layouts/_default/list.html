@@ -1,81 +1,61 @@
 {{ define "main" }}
 <div class="max-w-6xl mx-auto">
   <!-- Page Header -->
-  <header class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ .Title }}</h1>
-    {{ with .Description }}
-    <p class="text-lg text-gray-600">{{ . }}</p>
-    {{ end }}
+  <header class="mb-12">
+    <div class="border-l-4 border-wine-600 pl-6 py-8">
+      <h1 class="text-4xl font-bold mb-4 text-black">{{ .Title }}</h1>
+      {{ with .Description }}
+      <p class="text-xl text-gray-600">{{ . }}</p>
+      {{ else }}
+      <p class="text-xl text-gray-600">所有文章列表</p>
+      {{ end }}
+    </div>
   </header>
   
-  <!-- Posts Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    {{ range .Pages }}
-    <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-      {{ if .Params.cover }}
-      <img src="{{ .Params.cover }}" alt="{{ .Title }}" class="w-full h-48 object-cover">
-      {{ end }}
-      <div class="p-6">
-        <div class="flex items-center text-sm text-gray-500 mb-2">
-          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time>
-          {{ with .Params.categories }}
-          <span class="mx-2">•</span>
-          {{ range . }}
-          <a href="{{ $.Site.Taxonomies.categories.Page.RelPermalink }}{{ . | urlize }}/" class="hover:text-blue-600 transition-colors">
-            {{ . }}
-          </a>
-          {{ end }}
-          {{ end }}
-        </div>
-        <h3 class="text-xl font-semibold mb-2">
-          <a href="{{ .RelPermalink }}" class="text-gray-900 hover:text-blue-600 transition-colors">
+  <!-- Posts List -->
+  <div class="space-y-4 mb-12">
+    {{ $pages := .Paginator.Pages }}
+    {{ if eq .Type "posts" }}
+      {{ $pages = .Paginator.Pages.ByDate.Reverse }}
+    {{ end }}
+    {{ range $pages }}
+    <div class="flex items-center justify-between py-3 border-b border-gray-100">
+      <div class="flex-1">
+        <h3 class="text-lg font-medium">
+          <a href="{{ .RelPermalink }}" class="text-black hover:text-wine-600 transition-colors">
             {{ .Title }}
           </a>
         </h3>
-        <p class="text-gray-600 line-clamp-3">{{ .Summary }}</p>
-        <a href="{{ .RelPermalink }}" class="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium">
-          阅读更多 →
-        </a>
+        {{ with .Params.categories }}
+        <div class="flex items-center mt-1">
+          {{ range . }}
+          <span class="text-sm text-gray-500 mr-2">{{ . }}</span>
+          {{ end }}
+        </div>
+        {{ end }}
       </div>
-    </article>
+      <div class="text-sm text-gray-500 ml-4 whitespace-nowrap">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time>
+      </div>
+    </div>
     {{ end }}
   </div>
   
   <!-- Pagination -->
-  {{ if gt .Paginator.TotalPages 1 }}
-  <nav class="mt-12 flex justify-center">
-    <ul class="flex space-x-2">
-      {{ if .Paginator.HasPrev }}
-      <li>
-        <a href="{{ .Paginator.Prev.URL }}" class="px-3 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-          <i class="fas fa-chevron-left"></i>
-        </a>
-      </li>
-      {{ end }}
-      
-      {{ range .Paginator.Pagers }}
-      {{ if eq .PageNumber .Paginator.PageNumber }}
-      <li>
-        <span class="px-3 py-2 bg-blue-600 text-white rounded-md">{{ .PageNumber }}</span>
-      </li>
-      {{ else }}
-      <li>
-        <a href="{{ .URL }}" class="px-3 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-          {{ .PageNumber }}
-        </a>
-      </li>
-      {{ end }}
-      {{ end }}
-      
-      {{ if .Paginator.HasNext }}
-      <li>
-        <a href="{{ .Paginator.Next.URL }}" class="px-3 py-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-          <i class="fas fa-chevron-right"></i>
-        </a>
-      </li>
-      {{ end }}
-    </ul>
-  </nav>
+  {{ partial "pagination.html" . }}
+  
+  {{ if eq (len .Paginator.Pages) 0 }}
+  <div class="text-center py-16">
+    <div class="max-w-md mx-auto">
+      <div class="text-gray-400 mb-4">
+        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-700 mb-2">暂无文章</h3>
+      <p class="text-gray-500">还没有发布任何文章，请稍后再来查看。</p>
+    </div>
+  </div>
   {{ end }}
 </div>
 {{ end }}
