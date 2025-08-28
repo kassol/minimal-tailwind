@@ -1,3 +1,10 @@
-<div class="container mx-auto px-4 py-8 text-center">
-  <p class="text-gray-600">Copyright {{ now.Year }}. All rights reserved.</p>
-</div>
+<footer class="border-t border-gray-200 mt-16">
+  <div class="container mx-auto px-4 max-w-6xl py-8">
+    <div class="text-center text-gray-500 text-sm">
+      <p>&copy; {{ now.Format "2006" }} {{ site.Title }}. 保留所有权利。</p>
+      <p class="mt-1">
+        由 <a href="https://gohugo.io/" class="hover:text-wine-600 transition-colors">Hugo</a> 驱动
+      </p>
+    </div>
+  </div>
+</footer>

@@ -4,14 +4,10 @@
   {{ partial "head.html" . }}
 </head>
 <body class="min-h-screen bg-white">
-  <header class="bg-white shadow-sm">
-    {{ partial "header.html" . }}
-  </header>
+  {{ partial "header.html" . }}
   <main class="container mx-auto px-4 py-8 max-w-6xl">
     {{ block "main" . }}{{ end }}
   </main>
-  <footer class="bg-black text-white">
-    {{ partial "footer.html" . }}
-  </footer>
+  {{ partial "footer.html" . }}
 </body>
 </html>

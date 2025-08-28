@@ -1,54 +1,9 @@
-<footer class="bg-gray-800 text-white py-8">
-  <div class="container mx-auto px-4 max-w-6xl">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      <!-- About Section -->
-      <div>
-        <h3 class="text-lg font-semibold mb-4">关于博客</h3>
-        <p class="text-gray-300">{{ site.Params.description }}</p>
-      </div>
-      
-      <!-- Quick Links -->
-      <div>
-        <h3 class="text-lg font-semibold mb-4">快速链接</h3>
-        <ul class="space-y-2">
-          {{ range site.Menus.main }}
-          <li>
-            <a href="{{ .URL }}" class="text-gray-300 hover:text-white transition-colors">
-              {{ .Name }}
-            </a>
-          </li>
-          {{ end }}
-        </ul>
-      </div>
-      
-      <!-- Contact Info -->
-      <div>
-        <h3 class="text-lg font-semibold mb-4">联系信息</h3>
-        <p class="text-gray-300 mb-2">
-          <i class="fas fa-envelope mr-2"></i>
-          {{ site.Params.author }}
-        </p>
-        <div class="flex space-x-4">
-          <a href="#" class="text-gray-300 hover:text-white transition-colors">
-            <i class="fab fa-github text-xl"></i>
-          </a>
-          <a href="#" class="text-gray-300 hover:text-white transition-colors">
-            <i class="fab fa-twitter text-xl"></i>
-          </a>
-          <a href="#" class="text-gray-300 hover:text-white transition-colors">
-            <i class="fab fa-linkedin text-xl"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Copyright -->
-    <div class="mt-8 pt-8 border-t border-gray-700 text-center">
-      <p class="text-gray-400">
-        &copy; {{ now.Format "2006" }} {{ site.Title }}. 保留所有权利。
-      </p>
-      <p class="text-gray-400 text-sm mt-2">
-        由 <a href="https://gohugo.io/" class="hover:text-white transition-colors">Hugo</a> 驱动
+<footer class="border-t border-gray-200 mt-16">
+  <div class="container mx-auto px-4 max-w-6xl py-8">
+    <div class="text-center text-gray-500 text-sm">
+      <p>&copy; {{ now.Format "2006" }} {{ site.Title }}. 保留所有权利。</p>
+      <p class="mt-1">
+        由 <a href="https://gohugo.io/" class="hover:text-wine-600 transition-colors">Hugo</a> 驱动
       </p>
     </div>
   </div>
