@@ -1,0 +1,50 @@
+<header class="bg-white shadow-sm">
+  <div class="container mx-auto px-4 max-w-6xl">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo and Title -->
+      <div class="flex items-center">
+        <a href="/" class="text-xl font-bold text-black hover:text-wine-600 transition-colors">
+          {{ site.Title }}
+        </a>
+      </div>
+      
+      <!-- Navigation Menu -->
+      <nav class="hidden md:flex items-center space-x-8">
+        {{ range site.Menus.main }}
+        <a href="{{ .URL }}" class="text-gray-700 hover:text-wine-600 transition-colors font-medium">
+          {{ .Name }}
+        </a>
+        {{ end }}
+      </nav>
+      
+      <!-- Mobile menu button -->
+      <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-700 hover:text-wine-600 focus:outline-none focus:ring-2 focus:ring-wine-500">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+    </div>
+    
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="md:hidden hidden">
+      <nav class="py-4 border-t border-gray-200">
+        <div class="flex flex-col space-y-2">
+          {{ range site.Menus.main }}
+          <a href="{{ .URL }}" class="text-gray-700 hover:text-wine-600 transition-colors font-medium py-2">
+            {{ .Name }}
+          </a>
+          {{ end }}
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuButton.addEventListener('click', function() {
+      mobileMenu.classList.toggle('hidden');
+    });
+  });
+</script>

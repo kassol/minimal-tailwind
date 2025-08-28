@@ -1,0 +1,99 @@
+{{ define "main" }}
+<article class="max-w-4xl mx-auto px-6">
+  <!-- Article Header -->
+  <header class="mb-12">
+    <h1 class="text-4xl md:text-5xl font-bold text-black mb-6 leading-tight">{{ .Title }}</h1>
+    
+    <!-- Meta Information -->
+    <div class="flex flex-wrap items-center text-sm text-gray-600 mb-8 space-x-6">
+      <div class="flex items-center">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time>
+      </div>
+      
+      {{ with .Params.author }}
+      <div class="flex items-center">
+        <span>作者：{{ . }}</span>
+      </div>
+      {{ end }}
+      
+      {{ with .Params.categories }}
+      <div class="flex items-center">
+        <span>分类：</span>
+        <div class="flex flex-wrap gap-2 ml-1">
+          {{ range . }}
+          <a href="{{ $.Site.Taxonomies.categories.Page.RelPermalink }}{{ . | urlize }}/" class="text-wine-600 hover:text-wine-700 transition-colors font-medium">
+            {{ . }}
+          </a>
+          {{ end }}
+        </div>
+      </div>
+      {{ end }}
+      
+      {{ with .Params.reading_time }}
+      <div class="flex items-center">
+        <span>{{ . }} 分钟阅读</span>
+      </div>
+      {{ end }}
+    </div>
+    
+    <!-- Cover Image -->
+    {{ with .Params.cover }}
+    <img src="{{ . }}" alt="{{ .Title }}" class="w-full h-64 md:h-96 object-cover rounded-lg mb-8 shadow-lg">
+    {{ end }}
+    
+    <!-- Article Summary -->
+    {{ with .Summary }}
+    <div class="bg-wine-50 border-l-4 border-wine-600 p-6 mb-10">
+      <p class="text-wine-700 italic text-lg leading-relaxed">{{ . }}</p>
+    </div>
+    {{ end }}
+  </header>
+  
+  <!-- Article Content -->
+  <div class="prose prose-lg max-w-none prose-headings:text-black prose-headings:font-bold prose-a:text-wine-600 prose-a:no-underline hover:prose-a:text-wine-700 prose-strong:text-black prose-code:text-wine-600 prose-code:bg-wine-50 prose-blockquote:border-wine-600 prose-blockquote:text-gray-700">
+    {{ .Content }}
+  </div>
+  
+  <!-- Article Footer -->
+  <footer class="mt-16 pt-10 border-t border-gray-300">
+    <!-- Tags -->
+    {{ with .Params.tags }}
+    <div class="mb-8">
+      <h3 class="text-xl font-bold text-black mb-4">相关标签</h3>
+      <div class="flex flex-wrap gap-3">
+        {{ range . }}
+        <a href="{{ $.Site.Taxonomies.tags.Page.RelPermalink }}{{ . | urlize }}/" class="px-4 py-2 bg-wine-100 text-wine-700 rounded-full text-sm font-medium hover:bg-wine-200 transition-colors">
+          {{ . }}
+        </a>
+        {{ end }}
+      </div>
+    </div>
+    {{ end }}
+    
+    <!-- Navigation -->
+    <nav class="flex justify-between items-center pt-8 border-t border-gray-200">
+      {{ with .PrevInSection }}
+      <a href="{{ .RelPermalink }}" class="group flex items-center text-wine-600 hover:text-wine-700 transition-colors max-w-xs">
+        <div class="flex flex-col items-start">
+          <span class="text-xs text-gray-500 mb-1">上一篇</span>
+          <span class="font-medium group-hover:underline">{{ .Title }}</span>
+        </div>
+      </a>
+      {{ else }}
+      <div></div>
+      {{ end }}
+      
+      {{ with .NextInSection }}
+      <a href="{{ .RelPermalink }}" class="group flex items-center text-wine-600 hover:text-wine-700 transition-colors max-w-xs text-right">
+        <div class="flex flex-col items-end">
+          <span class="text-xs text-gray-500 mb-1">下一篇</span>
+          <span class="font-medium group-hover:underline">{{ .Title }}</span>
+        </div>
+      </a>
+      {{ else }}
+      <div></div>
+      {{ end }}
+    </nav>
+  </footer>
+</article>
+{{ end }}

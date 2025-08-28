@@ -1,0 +1,129 @@
+{{ define "main" }}
+<div class="max-w-6xl mx-auto px-6">
+  <!-- Page Header -->
+  <header class="mb-12">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center px-4 py-2 bg-wine-100 text-wine-700 rounded-full text-sm font-medium mb-4">
+        {{ if eq .Type "categories" }}
+        分类
+        {{ else if eq .Type "tags" }}
+        标签
+        {{ else }}
+        {{ .Type }}
+        {{ end }}
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold text-black mb-4">{{ .Title }}</h1>
+      <p class="text-lg text-gray-600">
+        共找到 <span class="font-semibold text-wine-600">{{ len .Pages }}</span> 篇相关文章
+      </p>
+    </div>
+    
+    {{ with .Description }}
+    <div class="max-w-3xl mx-auto text-center">
+      <p class="text-gray-700 text-lg leading-relaxed">{{ . }}</p>
+    </div>
+    {{ end }}
+  </header>
+  
+  <!-- Posts Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {{ range .Pages }}
+    <article class="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 overflow-hidden">
+      {{ if .Params.cover }}
+      <div class="aspect-video overflow-hidden">
+        <img src="{{ .Params.cover }}" alt="{{ .Title }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+      </div>
+      {{ end }}
+      
+      <div class="p-6">
+        <div class="flex items-center text-sm text-gray-500 mb-3">
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time>
+          {{ with .Params.reading_time }}
+          <span class="mx-2">•</span>
+          <span>{{ . }} 分钟阅读</span>
+          {{ end }}
+        </div>
+        
+        <h2 class="text-xl font-bold mb-3 leading-tight">
+          <a href="{{ .RelPermalink }}" class="text-black hover:text-wine-600 transition-colors">
+            {{ .Title }}
+          </a>
+        </h2>
+        
+        <p class="text-gray-600 line-clamp-3 mb-4">{{ .Summary }}</p>
+        
+        <div class="flex items-center justify-between">
+          <a href="{{ .RelPermalink }}" class="inline-flex items-center text-wine-600 hover:text-wine-700 font-medium text-sm transition-colors">
+            阅读全文
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+          
+          {{ with .Params.tags }}
+          <div class="flex flex-wrap gap-1">
+            {{ range first 2 . }}
+            <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">{{ . }}</span>
+            {{ end }}
+          </div>
+          {{ end }}
+        </div>
+      </div>
+    </article>
+    {{ end }}
+  </div>
+  
+  <!-- Pagination -->
+  {{ if gt .Paginator.TotalPages 1 }}
+  <nav class="mt-16 flex justify-center">
+    <ul class="flex items-center space-x-2">
+      {{ if .Paginator.HasPrev }}
+      <li>
+        <a href="{{ .Paginator.Prev.URL }}" class="flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-wine-50 hover:border-wine-300 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        </a>
+      </li>
+      {{ end }}
+      
+      {{ range .Paginator.Pagers }}
+      {{ if eq .PageNumber .Paginator.PageNumber }}
+      <li>
+        <span class="flex items-center justify-center w-10 h-10 bg-wine-600 text-white rounded-lg font-medium">{{ .PageNumber }}</span>
+      </li>
+      {{ else }}
+      <li>
+        <a href="{{ .URL }}" class="flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-wine-50 hover:border-wine-300 transition-colors">{{ .PageNumber }}</a>
+      </li>
+      {{ end }}
+      {{ end }}
+      
+      {{ if .Paginator.HasNext }}
+      <li>
+        <a href="{{ .Paginator.Next.URL }}" class="flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-lg hover:bg-wine-50 hover:border-wine-300 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </a>
+      </li>
+      {{ end }}
+    </ul>
+  </nav>
+  {{ end }}
+  
+  {{ if eq (len .Pages) 0 }}
+  <div class="text-center py-16">
+    <div class="max-w-md mx-auto">
+      <div class="text-gray-400 mb-4">
+        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-700 mb-2">暂无文章</h3>
+      <p class="text-gray-500">该{{ if eq .Type "categories" }}分类{{ else if eq .Type "tags" }}标签{{ else }}{{ .Type }}{{ end }}下还没有文章。</p>
+    </div>
+  </div>
+  {{ end }}
+</div>
+{{ end }}

@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  
+  body {
+    @apply bg-white text-black;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-black;
+  }
+  
+  a {
+    @apply text-wine-600 hover:text-wine-700 transition-colors;
+  }
+  
+  code {
+    @apply bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm font-mono;
+  }
+  
+  pre {
+    @apply bg-black text-gray-100 p-4 rounded-lg overflow-x-auto mb-4;
+  }
+  
+  pre code {
+    @apply bg-transparent text-gray-100 p-0;
+  }
+  
+  blockquote {
+    @apply border-l-4 border-wine-600 pl-4 italic text-gray-600 my-4;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 bg-wine-600 text-white rounded-lg hover:bg-wine-700 transition-colors;
+  }
+  
+  .btn-outline {
+    @apply px-4 py-2 border border-wine-600 text-wine-600 rounded-lg hover:bg-wine-50 transition-colors;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg border border-gray-200 hover:border-wine-600 transition-colors;
+  }
+  
+  .content-auto {
+    content-visibility: auto;
+  }
+}

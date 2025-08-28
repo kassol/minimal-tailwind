@@ -1,0 +1,67 @@
+{{ define "main" }}
+  <!-- Hero Section -->
+  <div class="border-l-4 border-wine-600 pl-6 py-8 mb-12">
+    <h1 class="text-4xl font-bold mb-4 text-black">欢迎来到我的博客</h1>
+    <p class="text-xl text-gray-600">{{ site.Params.description | default "简洁优雅的技术分享" }}</p>
+  </div>
+  
+  <!-- Categories Section -->
+  <div class="mb-12">
+    <h2 class="text-2xl font-bold mb-6 text-black">文章分类</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {{ range $key, $value := site.Taxonomies.categories }}
+      <div class="card p-6">
+        <h3 class="text-lg font-semibold mb-2">
+          <a href="{{ $value.Page.RelPermalink }}" class="text-black hover:text-wine-600 transition-colors">
+            {{ $key }}
+          </a>
+        </h3>
+        <p class="text-gray-500 text-sm">{{ len $value }} 篇文章</p>
+      </div>
+      {{ end }}
+    </div>
+  </div>
+  
+  <!-- Recent Posts Section -->
+  <div>
+    <h2 class="text-2xl font-bold mb-6 text-black">最新文章</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {{ range first 6 (where site.RegularPages "Type" "in" (slice "posts" "post")) }}
+      <article class="card overflow-hidden">
+        {{ if .Params.cover }}
+        <img src="{{ .Params.cover }}" alt="{{ .Title }}" class="w-full h-48 object-cover">
+        {{ end }}
+        <div class="p-6">
+          <div class="flex items-center text-sm text-gray-500 mb-2">
+            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time>
+            {{ with .Params.categories }}
+            <span class="mx-2">•</span>
+            {{ range . }}
+            <a href="{{ $.Site.Taxonomies.categories.Page.RelPermalink }}{{ . | urlize }}/" class="hover:text-wine-600 transition-colors">
+              {{ . }}
+            </a>
+            {{ end }}
+            {{ end }}
+          </div>
+          <h3 class="text-xl font-semibold mb-2">
+            <a href="{{ .RelPermalink }}" class="text-black hover:text-wine-600 transition-colors">
+              {{ .Title }}
+            </a>
+          </h3>
+          <p class="text-gray-600 line-clamp-3">{{ .Summary }}</p>
+          <a href="{{ .RelPermalink }}" class="inline-block mt-4 text-wine-600 hover:text-wine-700 font-medium">
+            阅读更多 →
+          </a>
+        </div>
+      </article>
+      {{ end }}
+    </div>
+  </div>
+  
+  <!-- View All Posts Button -->
+  <div class="text-center mt-12">
+    <a href="/posts/" class="btn">
+      查看所有文章
+    </a>
+  </div>
+{{ end }}
