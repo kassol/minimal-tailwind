@@ -159,4 +159,10 @@
       padding: 8px !important;
     }
   }
+  
+  /* 禁用 prose 插件的 blockquote 双引号装饰 */
+  .prose blockquote p:before,
+  .prose blockquote p:after {
+    content: none !important;
+  }
 }
