@@ -32,6 +32,10 @@
 
 ## 变更日志
 
+### 2026-09-25 阶段 3 收尾
+- 404 页 `<title>` 改为「此页不在这里 | 站名」
+- 删除未使用的 `.btn-outline`、`.card`、`.content-auto`，以及与 Tailwind 3.4 自带类重复的 `.line-clamp-1/2/3`
+
 ### 2026-09-25 阶段 3：列表类页面
 - `baseof.html`：main 顶部间距由约 112px 收为桌面 72px、手机 28px（首页同受影响）
 - 新增 `_partials/post-list.html`，`section.html` 与 `term.html` 只调用它：72px 大标题 +「N 篇 · 按时间倒序」；每条日期 / 标题 / AI 总结（`description`，两行截断）/ 字数与分类，1px 细线分隔；`/posts/` 页头带「按年份浏览 →」。不再按分页内重排日期（Hugo 默认已按日期倒序）
