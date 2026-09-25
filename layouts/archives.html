@@ -25,7 +25,8 @@
       {{- range first 10 .Pages }}{{ template "archive-row" . }}{{ end }}
       {{- with after 10 .Pages }}
       <details class="group">
-        <summary class="list-none [&::-webkit-details-marker]:hidden group-open:hidden inline-flex items-center gap-2 min-h-11 cursor-pointer text-[15px] text-accent hover:text-accent-hover">展开其余 {{ len . }} 篇 <span aria-hidden="true">↓</span></summary>
+        {{- /* 展开后按钮留在列表顶部，改为「收起」 */}}
+        <summary class="list-none [&::-webkit-details-marker]:hidden inline-flex items-center min-h-11 cursor-pointer text-[15px] text-accent hover:text-accent-hover"><span class="inline-flex items-center gap-2 group-open:hidden">展开其余 {{ len . }} 篇 <span aria-hidden="true">↓</span></span><span class="hidden items-center gap-2 group-open:inline-flex">收起 <span aria-hidden="true">↑</span></span></summary>
         {{- range . }}{{ template "archive-row" . }}{{ end }}
       </details>
       {{- end }}

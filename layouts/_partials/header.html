@@ -8,7 +8,7 @@
     <div class="hidden ml-auto md:flex flex-wrap items-center justify-end gap-8">
       <nav aria-label="主导航" class="flex items-center gap-9 text-[17px]">
         {{- range site.Menus.main }}
-        <a href="{{ .URL }}" class="inline-flex items-center min-h-11 text-ink hover:text-accent">{{ .Name }}</a>
+        <a href="{{ .URL }}"{{ if hasPrefix $.RelPermalink .URL }} aria-current="page"{{ end }} class="inline-flex items-center min-h-11 text-ink hover:text-accent">{{ .Name }}</a>
         {{- end }}
       </nav>
       <div class="flex items-center gap-2">
@@ -17,7 +17,7 @@
         <button type="button" data-search-open aria-keyshortcuts="Meta+K Control+K" class="h-9 px-3 inline-flex items-center justify-center gap-2.5 border border-rule rounded text-sm text-meta hover:text-accent">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
           <span>搜索</span>
-          <kbd aria-hidden="true" class="px-[5px] py-px border border-rule rounded-[3px] font-mono text-[11px]">⌘K</kbd>
+          <kbd data-search-kbd aria-hidden="true" class="px-[5px] py-px border border-rule rounded-[3px] font-mono text-[11px]">⌘K</kbd>
         </button>
         {{- with site.Home.OutputFormats.Get "rss" }}
         <a href="{{ .RelPermalink }}" aria-label="RSS 订阅" class="w-11 h-11 flex items-center justify-center text-meta hover:text-accent">

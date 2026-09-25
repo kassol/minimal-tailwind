@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{- /* 分类法索引：/categories/ 为每个分类一个大条目并附标签小节；/tags/ 只有标签小节 */}}
+{{- /* 分类法索引：/categories/ 为每个分类一个大条目（站点只启用 categories 分类法） */}}
 {{- $isCategories := eq .Data.Plural "categories" }}
 <div class="w-full max-w-[1120px] mx-auto px-1 lg:px-0">
   <header class="pb-8 lg:pb-14 flex flex-col gap-3 lg:gap-4">
@@ -49,24 +49,6 @@
     </div>
   </section>
   {{- end }}
-  {{- end }}
-
-  {{- /* 标签：按使用次数列出；没有标签时显示空状态 */}}
-  {{- with site.GetPage "/tags" }}
-  <section class="{{ if $isCategories }}mt-20 lg:mt-[104px] {{ end }}pt-6 lg:pt-10 border-t border-strong grid lg:grid-cols-[240px_minmax(0,1fr)] gap-4 lg:gap-16">
-    {{- if $isCategories }}
-    <h2 class="text-base tracking-[0.1em] text-accent">{{ .Title }}</h2>
-    {{- end }}
-    {{- with .Data.Terms.ByCount }}
-    <div class="flex flex-wrap gap-x-6 gap-y-2 text-lg">
-      {{- range . }}
-      <a href="{{ .Page.RelPermalink }}" class="inline-flex items-baseline gap-1.5 min-h-11">{{ .Page.LinkTitle }}<span class="font-mono text-xs text-meta">{{ .Count }}</span></a>
-      {{- end }}
-    </div>
-    {{- else }}
-    <p class="text-[22px] text-secondary">暂无标签</p>
-    {{- end }}
-  </section>
   {{- end }}
 </div>
 {{ end }}

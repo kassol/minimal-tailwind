@@ -159,6 +159,10 @@ function initSearch() {
     }
   });
 
+  // 页眉快捷键提示默认写 ⌘K，非 Apple 平台改为 Ctrl K
+  if (!/mac|iphone|ipad/i.test(navigator.userAgentData?.platform || navigator.platform)) {
+    document.querySelectorAll('[data-search-kbd]').forEach(k => { k.textContent = 'Ctrl K'; });
+  }
   document.querySelectorAll('[data-search-open]').forEach(b => b.addEventListener('click', () => open(null, b)));
   document.querySelectorAll('[data-search-form]').forEach(form => form.addEventListener('submit', e => {
     e.preventDefault();

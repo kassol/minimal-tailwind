@@ -1,10 +1,21 @@
+{{- /* 年轮分镜的点亮规则按章节数生成，放在 <head>（<style> 不能出现在 <body> 里）；颜色值在 styles.css 的 .year-bar、.chapter-tone、.chapter-num */}}
+{{ define "head" }}
+<style>{{ range $i, $_ := hugo.Data.chapters }}[data-active-chapter="{{ $i }}"] [data-chapter="{{ $i }}"]{--tone:var(--c-accent)}{{ end }}</style>
+{{ end }}
+
 {{ define "main" }}
 {{- /* 首页：Hero、最新一篇、年轮分镜。分章来自站点 data/chapters.yaml，篇数与年份统计全部构建时计算 */}}
-{{- $posts := (site.GetPage "/posts").RegularPages }}
+{{- $posts := slice }}
+{{- with site.GetPage "/posts" }}{{ $posts = .RegularPages }}{{ end }}
 {{- $chapters := hugo.Data.chapters }}
 {{- $total := len $posts }}
-{{- $first := (index $posts.ByDate 0).Date.Year }}
-{{- $last := (index $posts 0).Date.Year }}
+{{- /* 没有文章时不输出年轮分镜 */}}
+{{- $first := 0 }}
+{{- $last := 0 }}
+{{- with $posts }}
+  {{- $first = (index .ByDate 0).Date.Year }}
+  {{- $last = (index . 0).Date.Year }}
+{{- end }}
 <div class="w-full max-w-[1120px] mx-auto px-1 lg:px-0">
   <section class="pt-7 pb-12 lg:py-0 lg:min-h-[528px] flex gap-5 lg:gap-[72px] lg:items-center">
     {{- /* 竖排标语：第一列在右 */}}
@@ -44,6 +55,7 @@
   </section>
   {{- end }}
 
+  {{- if $posts }}
   {{- /* 年轮：从最早一年到最近一年每年一根柱；$owner 记录每年所属章节的序号，不属于任何章节为 -1 */}}
   {{- $counts := slice }}
   {{- $owner := slice }}
@@ -54,9 +66,8 @@
     {{- $owner = $owner | append $o }}
   {{- end }}
   {{- $max := math.Max $counts }}
-  {{- /* 无 JS 时第一章点亮；main.js 滚动时改写 data-active-chapter。点亮规则按章节数生成，颜色值在 styles.css 的 .year-bar、.chapter-tone、.chapter-num */}}
+  {{- /* 无 JS 时第一章点亮；main.js 滚动时改写 data-active-chapter。点亮规则在页首 define "head" */}}
   <section data-active-chapter="0" class="border-t border-strong">
-    <style>{{ range $i, $_ := $chapters }}[data-active-chapter="{{ $i }}"] [data-chapter="{{ $i }}"]{--tone:var(--c-accent)}{{ end }}</style>
     <header class="pt-7 pb-4 lg:pt-12 lg:pb-[76px] flex flex-wrap justify-between items-baseline lg:items-start gap-x-6 gap-y-2">
       <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2">
         <h2 class="text-[34px] lg:text-[56px] leading-none tracking-[0.06em] text-ink">{{ partial "inline/cn-num.html" (add (sub $last $first) 1) }}年</h2>
@@ -154,6 +165,7 @@
       </div>
     </div>
   </section>
+  {{- end }}
 </div>
 {{ end }}
 

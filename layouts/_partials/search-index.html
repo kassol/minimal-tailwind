@@ -3,5 +3,6 @@
 {{- range (site.GetPage "/posts").RegularPages }}
   {{- $items = $items | append (dict "t" .Title "d" (.Date.Format "2006-01-02") "u" .RelPermalink "s" (.Params.description | default "") "c" (.Plain | replaceRE `\s+` " " | strings.TrimSpace)) }}
 {{- end }}
-{{- $r := resources.FromString "search.json" ($items | jsonify) | fingerprint }}
+{{- /* noHTMLEscape：索引只经 fetch().json() 读取、以 textContent 输出，不必把 < > & 转成 \u003c 等 6 字节转义 */}}
+{{- $r := resources.FromString "search.json" ($items | jsonify (dict "noHTMLEscape" true)) | fingerprint }}
 {{- return $r.RelPermalink }}

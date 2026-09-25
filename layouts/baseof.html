@@ -2,6 +2,8 @@
 <html lang="{{ site.Language.Locale }}" dir="{{ or site.Language.Direction `ltr` }}">
 <head>
   {{ partial "head.html" . }}
+  {{- /* 页面模板可用 define "head" 追加 <head> 内容 */}}
+  {{ block "head" . }}{{ end }}
 </head>
 <body class="min-h-screen flex flex-col items-center bg-paper">
   {{ partial "header.html" . }}

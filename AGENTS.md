@@ -6,10 +6,10 @@
 
 ## 目录结构
 
-- `layouts/` - 模板。页面模板：`home.html`（Hero、最新、年轮分镜，读站点 `data/chapters.yaml`）、`section.html`、`page.html`、`taxonomy.html`、`term.html`、`archives.html`（站点 `content/archives.md` 以 `layout: archives` 选用）、`about.html`（站点 `content/about.md` 以 `layout: about` 选用）、`404.html`；外壳 `baseof.html`；`rss.xml` 覆盖 Hugo 内置 RSS
+- `layouts/` - 模板。页面模板：`home.html`（Hero、最新、年轮分镜，读站点 `data/chapters.yaml`）、`section.html`、`page.html`、`taxonomy.html`、`term.html`、`archives.html`（站点 `content/archives.md` 以 `layout: archives` 选用）、`about.html`（站点 `content/about.md` 以 `layout: about` 选用）、`404.html`；外壳 `baseof.html`（页面模板可 `define "head"` 追加 `<head>` 内容）；`rss.xml` 覆盖 Hugo 内置 RSS；`robots.txt`（站点开 `enableRobotsTXT` 时生效）
 - `layouts/_partials/` - 组件（Hugo 只查找 `_partials/`）。`seal.html` 为 2×2 方印，页眉页脚与关于页共用；`theme-toggle.html` 为外观三态切换，桌面页眉与手机页脚共用；`post-list.html` 为文章列表，`section.html` 与 `term.html` 共用；`search.html` 为搜索浮层（`baseof.html` 引入），`search-index.html` 生成其索引
 - `layouts/_shortcodes/` - `post-count.html`：文章总篇数，供站点内容页引用
-- `layouts/_default/_markup/` - Markdown 渲染钩子：`render-link.html`（外链新标签页 + ↗）、`render-image.html`（纸质照片 + 灯箱）
+- `layouts/_markup/` - Markdown 渲染钩子：`render-link.html`（外链新标签页 + ↗）、`render-image.html`（纸质照片 + 灯箱）
 - `assets/css/styles.css` - Tailwind 入口、设计 token（`--c-*` CSS 变量，明暗两套）、组件样式
 - `assets/js/main.js` - 外观切换、手机菜单、目录高亮、年轮点亮、搜索浮层、GLightbox 初始化
 - `static/fonts/` - 自托管的 IBM Plex Mono（拉丁子集 400/500）及其 OFL 许可
@@ -26,13 +26,25 @@
 
 ## 依赖关系
 
-- Hugo extended（跟随最新版）
+- Hugo ≥ 0.146（跟随最新版），不依赖 extended：只用 PostCSS、js.Build、fingerprint，没有 Sass 与图片处理
 - 站点根目录的 PostCSS + Tailwind CSS 3 + @tailwindcss/typography
-- GLightbox（jsDelivr CDN）
+- GLightbox 3.3.1（jsDelivr CDN，锁定版本 + SRI；升级时重算 `head.html` 里的 integrity）
 - 京華老宋体 webfont（imagekit CSS）
 - IBM Plex Mono（`@fontsource/ibm-plex-mono` 的 woff2，只复制文件，OFL）
 
 ## 变更日志
+
+### 2026-09-25 性能、SEO 与可访问性修整
+- `head.html`：GLightbox 锁定 3.3.1 并加 SRI，只在正文含 `data-glightbox` 的页面加载，脚本 `defer`；`main.js` 也 `defer`（两者按文档顺序在 DOMContentLoaded 前执行）。viewport 加 `initial-scale=1`；分页第 2 页起标题加「· 第 N 页」；全站 RSS 自动发现；文章页输出 `article:published_time`，og:image 用正文第一张图（没有图用 `og-default.png`，只有默认图带宽高）
+- 文章页「同分类」跳过上一篇、下一篇，避免与上下篇导航重复
+- 目录：删除 `main.js` 接管点击的平滑滚动（按吸顶页眉减 80px，但页眉不吸顶）和永不触发的补 id；改由 CSS 的 `scroll-margin-top`（1.5rem）与 `scroll-behavior: smooth`（仅 `prefers-reduced-motion: no-preference`）完成。滚动高亮不变
+- 渲染钩子迁到 `layouts/_markup/`（Hugo 0.146 起的目录结构）；放大链接的可访问名称带序号「放大查看第 N 张图」
+- 新增 `robots.txt` 模板；搜索索引 `jsonify` 关闭 HTML 转义（内容不变，原始体积小 0.07%：索引体积由正文决定）
+- `.prose` 行内代码不再加反引号；删除被 `.prose` 覆盖、从未生效的基础层 `blockquote` 规则
+- 分类法索引删除标签小节（站点不再启用 tags）
+- 首页：年轮点亮规则的 `<style>` 从 `<section>` 移到 `<head>`（`baseof.html` 新增 `head` 块）；没有文章时不输出年轮分镜，构建不再报错
+- 桌面导航当前项带 `aria-current`；归档「展开其余」展开后可收起；非 Apple 平台搜索快捷键提示显示 Ctrl K
+- 删除 Hugo 脚手架留下的 `content/` 示例文章与 `hugo.toml` 的 example.org / en-US / 示例菜单（站点生效配置不变）
 
 ### 2026-09-25 关于页窄屏溢出
 - 关于页等宽网址加 `overflow-wrap: anywhere`，修复 360px 宽度下横向溢出 24px
