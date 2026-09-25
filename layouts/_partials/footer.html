@@ -4,7 +4,9 @@
       {{ partial "seal.html" "w-6 h-6 p-px rounded-sm text-[10px] leading-[11px]" }}
       <span>&copy; {{ site.Params.since }}—{{ now.Format "2006" }} {{ site.Title }}</span>
     </span>
-    <span class="flex items-center gap-6">
+    <span class="flex flex-wrap items-center gap-x-6">
+      {{- with site.GetPage "/archives" }}<a href="{{ .RelPermalink }}" class="inline-flex items-center min-h-11">{{ .Title }}</a>{{ end }}
+      {{- with site.GetPage "/about" }}<a href="{{ .RelPermalink }}" class="inline-flex items-center min-h-11">{{ .Title }}</a>{{ end }}
       {{- with site.Home.OutputFormats.Get "rss" }}
       <a href="{{ .RelPermalink }}" class="inline-flex items-center min-h-11">RSS</a>
       {{- end }}

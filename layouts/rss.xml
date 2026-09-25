@@ -22,7 +22,10 @@
 {{- $pctx := . }}
 {{- if .IsHome }}{{ $pctx = .Site }}{{ end }}
 {{- $pages := slice }}
-{{- if or $.IsHome $.IsSection }}
+{{- if $.IsHome }}
+	{{- /* 站点 RSS 只收文章，不含关于、归档等独立页 */}}
+	{{- $pages = where $pctx.RegularPages "Section" "posts" }}
+{{- else if $.IsSection }}
 	{{- $pages = $pctx.RegularPages }}
 {{- else }}
 	{{- $pages = $pctx.Pages }}
@@ -34,9 +37,9 @@
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title>{{ if eq .Title .Site.Title }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{ . }} on {{ end }}{{ .Site.Title }}{{ end }}</title>
+		<title>{{ if eq .Title .Site.Title }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{ . }} · {{ end }}{{ .Site.Title }}{{ end }}</title>
 		<link>{{ .Permalink }}</link>
-		<description>Recent content {{ if ne .Title .Site.Title }}{{ with .Title }}in {{ . }} {{ end }}{{ end }}on {{ .Site.Title }}</description>
+		<description>{{ if ne .Title .Site.Title }}{{ with .Title }}{{ . }} · {{ end }}{{ end }}{{ .Site.Title }}的最新文章</description>
 		<generator>Hugo</generator>
 		<language>{{ site.Language.Locale }}</language>
 		{{ with $authorEmail }}

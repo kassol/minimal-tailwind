@@ -7,10 +7,12 @@
 {{- $desc := or .Params.description site.Params.description (delimit site.Params.tagline "，") }}
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" $title site.Title }}{{ end }}</title>
 <meta name="description" content="{{ $desc }}">
-{{- /* 分页列表页的 canonical 指向第一页（.Permalink）；这里不调用 .Paginator，否则不分页的页面也会生成 /page/N/ */}}
+{{- /* 分页列表（文章列表、分类详情）的 canonical 指向当前页码；只对这两类调用 .Paginator，它们的模板本就分页，不会给其他页面多生成 /page/N/ */}}
+{{- $url := .Permalink }}
+{{- if in (slice "section" "term") .Kind }}{{ $url = .Paginator.URL | absURL }}{{ end }}
 {{- if ne .Kind "404" }}
-<link rel="canonical" href="{{ .Permalink }}">
-<meta property="og:url" content="{{ .Permalink }}">
+<link rel="canonical" href="{{ $url }}">
+<meta property="og:url" content="{{ $url }}">
 {{- end }}
 <meta property="og:title" content="{{ $title }}">
 <meta property="og:description" content="{{ $desc }}">

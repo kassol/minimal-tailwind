@@ -34,6 +34,11 @@
 
 ## 变更日志
 
+### 2026-09-25 阶段 5 收尾
+- 站点 RSS 只收 posts 区文章（关于、归档页恢复进入页面集合后不混入 feed）；频道标题与描述改为中文
+- 文章列表与分类详情的 canonical 指向当前页码
+- 页脚加入「归档」「关于」链接
+
 ### 2026-09-25 阶段 5：搜索、关于页、分享元信息、RSS 摘要
 - 搜索：`_partials/search-index.html` 把全部文章的标题、日期、链接、AI 总结、正文纯文本输出为带指纹的 `search.<hash>.json`（`resources.FromString`，站点无需配置输出格式）；`_partials/search.html` 为 `<dialog>` 浮层，`main.js` 的 `initSearch` 首次打开时加载索引，不分词子串匹配（空格分隔多个词须全部出现），标题命中在前，其余按日期倒序；片段取正文首个命中处，关键词胭脂底 + 强调色字，选中行上改用 `muted/40`
 - 交互：页眉搜索按钮（桌面「搜索 ⌘K」，手机 44px 图标）、⌘K / Ctrl+K 打开、Esc 或点遮罩关闭（手机有「取消」）、↑↓ 选择、↵ 打开；输入框为 combobox + `aria-activedescendant`，输入法组合中不搜索、不响应方向键与回车；模态由原生 `showModal()` 提供，关闭后焦点回到打开者；`type=search` 输入框里的 Esc 由脚本直接关闭浮层（浏览器默认先清空内容）。无 JS 时 `head.html` 的 `<noscript>` 样式隐藏搜索入口
