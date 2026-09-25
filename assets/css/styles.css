@@ -87,19 +87,19 @@
   }
   
   code {
-    @apply bg-gray-100 text-gray-800 px-1 py-0.5 rounded text-sm font-mono;
+    @apply bg-tint text-body px-1 py-0.5 rounded text-sm font-mono;
   }
   
   pre {
-    @apply bg-black text-gray-100 p-4 rounded-lg overflow-x-auto mb-4;
+    @apply bg-tint text-body p-4 rounded-lg overflow-x-auto mb-4;
   }
   
   pre code {
-    @apply bg-transparent text-gray-100 p-0;
+    @apply bg-transparent text-inherit p-0;
   }
   
   blockquote {
-    @apply border-l-4 border-wine-600 pl-4 italic text-gray-600 my-4;
+    @apply border-l-2 border-strong pl-4 text-meta my-4;
   }
   
   /* 全局强制覆盖prose插件 */
@@ -110,7 +110,7 @@
 
 @layer components {
   .btn {
-    @apply px-4 py-2 bg-wine-500 text-white rounded-lg hover:bg-wine-600 hover:text-white transition-colors;
+    @apply px-4 py-2 bg-accent-fill text-on-accent-fill rounded-lg hover:bg-accent-hover hover:text-on-accent-fill transition-colors;
   }
   
   .btn-outline {
@@ -118,7 +118,7 @@
   }
   
   .card {
-    @apply bg-white rounded-lg border border-gray-200 hover:border-wine-600 transition-colors;
+    @apply bg-paper rounded-lg border border-rule hover:border-accent transition-colors;
   }
   
   .content-auto {
@@ -152,15 +152,15 @@
   }
   
   .toc-header {
-    @apply flex items-center justify-between pb-3 border-b border-gray-200 mb-4;
+    @apply flex items-center justify-between pb-3 border-b border-rule mb-4;
   }
   
   .toc-title {
-    @apply text-lg font-medium text-black;
+    @apply text-lg text-ink;
   }
   
   .toc-toggle {
-    @apply text-gray-600 hover:text-wine-600 p-1 rounded;
+    @apply text-meta hover:text-accent p-1 rounded;
   }
   
   .toc-content {
@@ -181,17 +181,17 @@
   }
   
   .toc-nav a {
-    @apply block py-1 px-2 text-sm text-gray-400 hover:text-wine-600 hover:bg-wine-50 rounded transition-all duration-200 no-underline;
+    @apply block py-1 px-2 text-sm text-meta hover:text-accent hover:bg-tint rounded transition-all duration-200 no-underline;
   }
   
   .toc-nav a.active {
-    @apply text-wine-600 bg-wine-50 font-medium;
+    @apply text-accent bg-tint;
   }
   
   /* 移动端TOC样式 */
   @media (max-width: 1023px) {
     .toc-nav {
-      @apply bg-gray-50 border border-gray-200 rounded-lg p-4;
+      @apply bg-tint border border-rule rounded-lg p-4;
     }
   }
   

@@ -32,6 +32,10 @@
 
 ## 变更日志
 
+### 2026-09-25 清理写死的颜色与死代码
+- `styles.css` 中 code、pre、blockquote、按钮、卡片、目录的 gray/white/black 改为设计 token，随明暗切换；blockquote 改为 2px 粗分隔线、不再斜体
+- 删除未被引用的 `_partials/menu.html`
+
 ### 2026-09-25 阶段 1：基础层
 - 设计 token：`styles.css` 定义明暗两套 `--c-*` 变量，暗色在 `[data-theme="dark"]` 与跟随系统的媒体查询下生效
 - 外观三态（跟随系统 / 浅色 / 深色）：`head.html` 首部防闪脚本 + 页眉切换组件 + `main.js` 的 `initThemeToggle`，受 `params.darkMode` 开关控制
