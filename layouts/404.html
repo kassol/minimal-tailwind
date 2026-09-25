@@ -1,0 +1,15 @@
+{{ define "main" }}
+<section class="w-full max-w-[1120px] mx-auto px-1 lg:px-0 lg:pt-12 lg:pb-12 grid lg:grid-cols-[240px_minmax(0,1fr)] gap-6 lg:gap-16 items-start">
+  <span class="font-mono text-[72px] lg:text-[96px] leading-none tracking-[-0.02em] text-accent">404</span>
+  <div class="flex flex-col gap-7 max-w-[560px]">
+    <div class="flex flex-col gap-3.5">
+      <h1 class="text-[40px] lg:text-[56px] leading-[1.15] tracking-[0.04em] text-ink">此页不在这里</h1>
+      <p class="text-[17px] lg:text-[19px] leading-[1.9] text-secondary">可能已被移走，或者从未存在过。</p>
+    </div>
+    <div class="flex flex-wrap gap-4">
+      <a href="{{ site.Home.RelPermalink }}" class="h-12 px-7 inline-flex items-center rounded bg-accent-fill text-on-accent-fill hover:bg-accent-fill/90 hover:text-on-accent-fill">回到首页</a>
+      <a href="{{ "archives/" | relURL }}" class="h-12 px-7 inline-flex items-center rounded border border-accent">按年份浏览</a>
+    </div>
+  </div>
+</section>
+{{ end }}

@@ -1,0 +1,35 @@
+{{- /* 文章列表：/posts/（section.html）与分类详情（term.html）共用。上下文：列表页 */}}
+{{- $pager := .Paginator }}
+<div class="w-full max-w-[1120px] mx-auto px-1 lg:px-0">
+  <header class="pb-8 lg:pb-14 flex flex-wrap justify-between items-end gap-4">
+    <div class="flex flex-col gap-3 lg:gap-4">
+      <h1 class="text-[44px] lg:text-[72px] leading-none tracking-[0.06em] text-ink">{{ .Title }}</h1>
+      <span class="font-mono text-[13px] lg:text-sm text-meta">{{ $pager.TotalNumberOfElements }} 篇 · 按时间倒序</span>
+    </div>
+    {{- if eq .Kind "section" }}
+    <a href="{{ "archives/" | relURL }}" class="inline-flex items-center min-h-11 text-base">按年份浏览 <span aria-hidden="true" class="ml-2">→</span></a>
+    {{- end }}
+  </header>
+
+  <div class="flex flex-col border-t border-strong">
+    {{- range $pager.Pages }}
+    <a href="{{ .RelPermalink }}" class="group flex flex-col gap-2 md:grid md:grid-cols-[112px_minmax(0,1fr)_120px] md:gap-8 py-5 md:py-[26px] border-b border-rule text-ink hover:text-ink">
+      <time datetime="{{ .Date.Format "2006-01-02" }}" class="md:pt-[9px] font-mono text-xs md:text-[13px] text-meta">{{ .Date.Format site.Params.dateFormat }}</time>
+      <span class="flex flex-col gap-2">
+        <span class="text-xl md:text-2xl group-hover:text-accent transition-colors">{{ .Title }}</span>
+        {{- with .Params.description }}
+        <span class="line-clamp-2 text-[15px] leading-[1.8] text-meta">{{ . }}</span>
+        {{- end }}
+      </span>
+      <span class="flex gap-3 md:flex-col md:gap-1.5 md:items-end md:pt-2.5 font-mono text-xs text-meta">
+        <span>{{ .WordCount }} 字</span>
+        {{- range .GetTerms "categories" }}<span>{{ .LinkTitle }}</span>{{ end }}
+      </span>
+    </a>
+    {{- else }}
+    <p class="py-16 text-center text-meta">暂无文章</p>
+    {{- end }}
+  </div>
+
+  {{ partial "pagination.html" . }}
+</div>

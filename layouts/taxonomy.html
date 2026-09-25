@@ -1,54 +1,72 @@
 {{ define "main" }}
-<div class="w-[80%] mx-auto px-6">
-  <!-- Page Header -->
-  <header class="mb-12 text-center">
-    <h1 class="text-3xl md:text-4xl text-black mb-4">{{ .Title }}</h1>
-    <p class="text-base text-gray-600 max-w-2xl mx-auto">
-      {{ if eq .Type "categories" }}
-      探索不同主题的文章分类
-      {{ else if eq .Type "tags" }}
-      通过标签发现相关内容
-      {{ else }}
-      {{ with .Description }}{{ . }}{{ end }}
-      {{ end }}
-    </p>
+{{- /* 分类法索引：/categories/ 为每个分类一个大条目并附标签小节；/tags/ 只有标签小节 */}}
+{{- $isCategories := eq .Data.Plural "categories" }}
+<div class="w-full max-w-[1120px] mx-auto px-1 lg:px-0">
+  <header class="pb-8 lg:pb-14 flex flex-col gap-3 lg:gap-4">
+    <h1 class="text-[44px] lg:text-[72px] leading-none tracking-[0.06em] text-ink">{{ .Title }}</h1>
+    <span class="font-mono text-[13px] lg:text-sm text-meta">{{ len .Data.Terms }} 个{{ .Title }}{{ if $isCategories }} · {{ len (site.GetPage "/posts").RegularPages }} 篇{{ end }}</span>
   </header>
-  
-  <!-- Categories/Tags List -->
-  <div class="space-y-4 mb-12">
-    {{ range .Pages }}
-    <div class="flex items-center justify-between py-3 border-b border-gray-100">
-      <div class="flex-1">
-        <h2 class="text-base">
-          <a href="{{ .RelPermalink }}" class="text-black hover:text-wine-600 transition-colors">
-            {{ .Title }}
-          </a>
-        </h2>
-        {{ if .Description }}
-        <p class="text-sm text-gray-600 mt-1">{{ .Description }}</p>
-        {{ end }}
+
+  {{- if $isCategories }}
+  {{- range $i, $t := .Data.Terms.ByCount }}
+  {{- $pages := .Pages }}
+  {{- $first := (index $pages.ByDate 0).Date.Year }}
+  {{- $last := (index $pages 0).Date.Year }}
+  {{- /* 按年篇数：柱高按最大值归一，峰值与最近一年用强调色，零篇年份画细线 */}}
+  {{- $counts := slice }}
+  {{- range seq $first $last }}{{ $counts = $counts | append (len (where $pages "Date.Year" .)) }}{{ end }}
+  {{- $max := math.Max $counts }}
+  <section class="{{ if $i }}mt-14 {{ end }}pt-6 lg:pt-10 border-t border-strong grid lg:grid-cols-[240px_minmax(0,1fr)_360px] gap-8 lg:gap-16 items-start">
+    <div class="flex flex-col gap-2.5">
+      <a href="{{ .Page.RelPermalink }}" class="text-[40px] lg:text-[64px] leading-none">{{ .Page.LinkTitle }}</a>
+      <span class="font-mono text-[13px] text-meta">{{ .Count }} 篇 · {{ $first }}{{ if ne $first $last }}—{{ $last }}{{ end }}</span>
+    </div>
+    <div class="flex flex-col gap-3">
+      <span class="text-[15px] text-secondary">每年篇数</span>
+      <div class="h-24 flex items-end gap-[3px] lg:gap-[5px] border-b border-strong">
+        {{- range $j, $c := $counts }}
+        {{- $y := add $first $j }}
+        {{- if $c }}
+        <span title="{{ $y }} · {{ $c }} 篇" class="flex-1 min-h-0.5 {{ if or (ge $c $max) (eq $y $last) }}bg-accent-fill{{ else }}bg-muted{{ end }}" style="height: {{ div (mul $c 100.0) $max }}%"></span>
+        {{- else }}
+        <span title="{{ $y }} · 0 篇" class="flex-1 h-px bg-rule"></span>
+        {{- end }}
+        {{- end }}
       </div>
-      <div class="ml-4 whitespace-nowrap">
-        <span class="bg-wine-100 text-wine-700 px-3 py-1 rounded-full text-sm">
-          {{ len .Pages }} 篇
-        </span>
+      <div class="flex justify-between font-mono text-[11px] text-meta">
+        <span>{{ $first }}</span>{{ if ne $first $last }}<span>{{ $last }}</span>{{ end }}
       </div>
     </div>
-    {{ end }}
-  </div>
-  
-  {{ if eq (len .Pages) 0 }}
-  <div class="text-center py-16">
-    <div class="max-w-md mx-auto">
-      <div class="text-gray-400 mb-4">
-        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-        </svg>
-      </div>
-      <h3 class="text-base text-gray-700 mb-2">暂无内容</h3>
-      <p class="text-gray-500">还没有任何{{ .Title }}，请稍后再来查看。</p>
+    <div class="flex flex-col">
+      <span class="pb-2 text-[15px] text-secondary">最近</span>
+      {{- range first 3 $pages }}
+      <a href="{{ .RelPermalink }}" class="flex justify-between gap-4 py-3 border-b border-rule text-lg text-ink hover:text-accent">
+        <span>{{ .Title }}</span>
+        <time datetime="{{ .Date.Format "2006-01-02" }}" class="shrink-0 pt-[5px] font-mono text-xs text-meta">{{ .Date.Format site.Params.dateFormat }}</time>
+      </a>
+      {{- end }}
+      <a href="{{ .Page.RelPermalink }}" class="pt-4 text-[15px]">查看 {{ .Page.LinkTitle }} 全部 {{ .Count }} 篇 →</a>
     </div>
-  </div>
-  {{ end }}
+  </section>
+  {{- end }}
+  {{- end }}
+
+  {{- /* 标签：按使用次数列出；没有标签时显示空状态 */}}
+  {{- with site.GetPage "/tags" }}
+  <section class="{{ if $isCategories }}mt-20 lg:mt-[104px] {{ end }}pt-6 lg:pt-10 border-t border-strong grid lg:grid-cols-[240px_minmax(0,1fr)] gap-4 lg:gap-16">
+    {{- if $isCategories }}
+    <h2 class="text-base tracking-[0.1em] text-accent">{{ .Title }}</h2>
+    {{- end }}
+    {{- with .Data.Terms.ByCount }}
+    <div class="flex flex-wrap gap-x-6 gap-y-2 text-lg">
+      {{- range . }}
+      <a href="{{ .Page.RelPermalink }}" class="inline-flex items-baseline gap-1.5 min-h-11">{{ .Page.LinkTitle }}<span class="font-mono text-xs text-meta">{{ .Count }}</span></a>
+      {{- end }}
+    </div>
+    {{- else }}
+    <p class="text-[22px] text-secondary">暂无标签</p>
+    {{- end }}
+  </section>
+  {{- end }}
 </div>
 {{ end }}

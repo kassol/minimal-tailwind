@@ -1,0 +1,44 @@
+{{ define "main" }}
+{{- /* 归档：全部文章按年分节。站点 content/archives.md 以 layout: archives 选用本模板 */}}
+{{- $posts := (site.GetPage "/posts").RegularPages }}
+{{- $years := $posts.GroupByDate "2006" }}
+<div class="w-full max-w-[1120px] mx-auto px-1 lg:px-0">
+  <header class="pb-8 lg:pb-14 flex flex-col lg:flex-row lg:justify-between lg:items-end gap-6">
+    <div class="flex flex-col gap-3 lg:gap-4">
+      <h1 class="text-[44px] lg:text-[72px] leading-none tracking-[0.06em] text-ink">{{ .Title }}</h1>
+      <span class="font-mono text-[13px] lg:text-sm text-meta">{{ len $posts }} 篇{{ with $years }} · {{ (index . (sub (len .) 1)).Key }}—{{ (index . 0).Key }}{{ end }}</span>
+    </div>
+    <nav aria-label="按年份跳转" class="flex flex-wrap gap-x-5 font-mono text-sm">
+      {{- range $i, $y := $years }}
+      <a href="#y{{ .Key }}" class="inline-flex items-center min-h-11 {{ if eq $i 0 }}text-accent{{ else }}text-secondary hover:text-accent{{ end }}">{{ .Key }}<sup class="ml-0.5 text-[10px]">{{ len .Pages }}</sup></a>
+      {{- end }}
+    </nav>
+  </header>
+
+  {{- range $i, $y := $years }}
+  <section id="y{{ .Key }}" class="{{ if $i }}mt-10 lg:mt-14 {{ end }}pt-6 lg:pt-8 border-t border-strong grid lg:grid-cols-[240px_minmax(0,1fr)] gap-4 lg:gap-16 scroll-mt-6">
+    <div class="flex items-baseline gap-3 lg:flex-col lg:gap-1.5">
+      <h2 class="text-[40px] lg:text-[64px] leading-none {{ if eq $i 0 }}text-accent{{ else }}text-ink{{ end }}">{{ .Key }}</h2>
+      <span class="font-mono text-sm text-meta">{{ len .Pages }} 篇</span>
+    </div>
+    <div class="flex flex-col">
+      {{- range first 10 .Pages }}{{ template "archive-row" . }}{{ end }}
+      {{- with after 10 .Pages }}
+      <details class="group">
+        <summary class="list-none [&::-webkit-details-marker]:hidden group-open:hidden inline-flex items-center gap-2 min-h-11 cursor-pointer text-[15px] text-accent hover:text-accent-hover">展开其余 {{ len . }} 篇 <span aria-hidden="true">↓</span></summary>
+        {{- range . }}{{ template "archive-row" . }}{{ end }}
+      </details>
+      {{- end }}
+    </div>
+  </section>
+  {{- end }}
+</div>
+{{ end }}
+
+{{ define "archive-row" }}
+<a href="{{ .RelPermalink }}" class="grid grid-cols-[48px_minmax(0,1fr)_auto] md:grid-cols-[80px_minmax(0,1fr)_80px] gap-4 md:gap-6 py-3 border-b border-rule text-lg text-ink hover:text-accent">
+  <time datetime="{{ .Date.Format "2006-01-02" }}" class="pt-1 font-mono text-[13px] text-meta">{{ .Date.Format "01-02" }}</time>
+  <span>{{ .Title }}</span>
+  <span class="pt-[5px] text-right font-mono text-xs text-meta">{{ .WordCount }} 字</span>
+</a>
+{{ end }}

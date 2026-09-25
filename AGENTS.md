@@ -6,8 +6,8 @@
 
 ## 目录结构
 
-- `layouts/` - 模板。页面模板：`home.html`、`section.html`、`page.html`、`taxonomy.html`、`term.html`；外壳 `baseof.html`
-- `layouts/_partials/` - 组件（Hugo 只查找 `_partials/`）。`seal.html` 为 2×2 方印，页眉页脚共用
+- `layouts/` - 模板。页面模板：`home.html`、`section.html`、`page.html`、`taxonomy.html`、`term.html`、`archives.html`（站点 `content/archives.md` 以 `layout: archives` 选用）、`404.html`；外壳 `baseof.html`
+- `layouts/_partials/` - 组件（Hugo 只查找 `_partials/`）。`seal.html` 为 2×2 方印，页眉页脚共用；`post-list.html` 为文章列表，`section.html` 与 `term.html` 共用
 - `layouts/_default/_markup/` - Markdown 渲染钩子：`render-link.html`（外链新标签页 + ↗）、`render-image.html`（纸质照片 + 灯箱）
 - `assets/css/styles.css` - Tailwind 入口、设计 token（`--c-*` CSS 变量，明暗两套）、组件样式
 - `assets/js/main.js` - 外观切换、目录高亮、GLightbox 初始化
@@ -31,6 +31,14 @@
 - IBM Plex Mono（`@fontsource/ibm-plex-mono` 的 woff2，只复制文件，OFL）
 
 ## 变更日志
+
+### 2026-09-25 阶段 3：列表类页面
+- `baseof.html`：main 顶部间距由约 112px 收为桌面 72px、手机 28px（首页同受影响）
+- 新增 `_partials/post-list.html`，`section.html` 与 `term.html` 只调用它：72px 大标题 +「N 篇 · 按时间倒序」；每条日期 / 标题 / AI 总结（`description`，两行截断）/ 字数与分类，1px 细线分隔；`/posts/` 页头带「按年份浏览 →」。不再按分页内重排日期（Hugo 默认已按日期倒序）
+- `pagination.html` 重写：44×44 页码方块，当前页强调色实底，首末页与当前页 ±1（在首末页时 ±2）之外折成 …；「上一页 / 下一页」到头时为禁用态
+- 新增 `archives.html`：「N 篇 · 起止年份」与年份跳转均由数据算出；按年分节，每年前 10 篇直接显示，其余放进 `<details>`
+- `taxonomy.html` 重写：每个分类一个大条目（篇数、年份跨度、按年篇数柱图、最近 3 篇）；标签小节列出标签，没有时显示「暂无标签」。`/tags/` 用同一模板，只有标签小节
+- 新增 `404.html`：Cloudflare Pages 检测到 `404.html` 后对未命中路径返回 404 状态
 
 ### 2026-09-25 图片只在独立成段时渲染为 figure
 - `render-image.html` 按 `.IsBlock` 分支：独立成段输出纸质照片 `<figure>`，行内图片输出不带相框的 `<img>`，避免 `<figure>` 落进 `<p>`；删除为此兜底的 `.prose p:empty` 隐藏规则
