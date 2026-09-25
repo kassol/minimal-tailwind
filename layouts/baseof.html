@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ site.Language.Locale }}" dir="{{ or site.Language.Direction `ltr` }}">
+<html lang="{{ site.Language.Locale }}" dir="{{ or site.Language.Direction `ltr` }}"{{ if not site.Params.darkMode }} data-theme="light"{{ end }}>
 <head>
   {{ partial "head.html" . }}
 </head>
-<body class="min-h-screen flex flex-col items-center bg-white">
+<body class="min-h-screen flex flex-col items-center bg-paper">
   {{ partial "header.html" . }}
   <main class="container flex-1 flex flex-col mx-auto px-4 py-8 lg:mt-20">
     {{ block "main" . }}{{ end }}

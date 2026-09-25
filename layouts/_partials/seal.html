@@ -1,0 +1,4 @@
+{{- /* 2×2 方印，右起竖读 site.Params.seal。上下文：尺寸相关的 class 字符串 */ -}}
+<span aria-hidden="true" dir="rtl" class="grid grid-cols-2 grid-rows-2 grid-flow-col place-items-center shrink-0 bg-accent-fill text-on-accent-fill {{ . }}">
+  {{- range split site.Params.seal "" }}<span>{{ . }}</span>{{ end -}}
+</span>

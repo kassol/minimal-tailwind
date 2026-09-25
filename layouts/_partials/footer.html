@@ -1,10 +1,14 @@
-<footer class="mt-16 container">
-  <div class="mx-auto px-4 max-w-6xl py-8">
-    <div class="text-center text-gray-400 text-sm">
-      <p>&copy; {{ now.Format "2006" }} {{ site.Title }}. 保留所有权利。</p>
-      <p class="mt-1">
-        由 <a href="https://gohugo.io/" class="hover:text-wine-400 transition-colors">Hugo</a> 驱动
-      </p>
-    </div>
+<footer class="w-full mt-16 border-t border-rule">
+  <div class="mx-auto box-content max-w-[1120px] px-5 pt-10 pb-14 flex flex-col gap-4 md:flex-row md:items-center md:justify-between text-sm text-meta">
+    <span class="flex items-center gap-3">
+      {{ partial "seal.html" "w-6 h-6 p-px rounded-sm text-[10px] leading-[11px]" }}
+      <span>&copy; {{ site.Params.since }}—{{ now.Format "2006" }} {{ site.Title }}</span>
+    </span>
+    <span class="flex items-center gap-6">
+      {{- with site.Home.OutputFormats.Get "rss" }}
+      <a href="{{ .RelPermalink }}" class="inline-flex items-center min-h-11">RSS</a>
+      {{- end }}
+      <span>由 <a href="https://gohugo.io/">Hugo</a> 驱动</span>
+    </span>
   </div>
 </footer>
