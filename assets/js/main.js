@@ -18,7 +18,23 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // TOC功能初始化
   initTableOfContents();
+
+  initChapterRing();
 });
+
+// 首页年轮分镜：章节顶部越过视口 40% 处即为当前章，写入 data-active-chapter；上色由 CSS 按 data-chapter 完成
+function initChapterRing() {
+  const root = document.querySelector('[data-active-chapter]');
+  if (!root || !('IntersectionObserver' in window)) return;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) root.dataset.activeChapter = e.target.dataset.chapter;
+    });
+  }, { rootMargin: '-40% 0px -59% 0px' });
+
+  root.querySelectorAll('article[data-chapter]').forEach(el => observer.observe(el));
+}
 
 // 外观三态：localStorage.theme = light | dark；缺省为跟随系统（不设 data-theme，交给 prefers-color-scheme）
 function initThemeToggle() {

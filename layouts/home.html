@@ -1,28 +1,184 @@
 {{ define "main" }}
-  <!-- 最近文章列表 - 居中 -->
-  <div class="mb-12 flex justify-center">
-    <div class="w-full">
-      <div class="space-y-3">
-        {{ range first 10 (where site.RegularPages "Type" "in" (slice "posts" "post")) }}
-        <div class="flex items-center justify-center">
-          <div class="flex-1 text-right pr-8">
-            <a href="{{ .RelPermalink }}" class="text-black hover:text-wine-600 transition-colors">
-              {{ .Title }}
-            </a>
-          </div>
-          <div class="flex-1 text-left text-sm text-gray-400 whitespace-nowrap">
-            <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time>
-          </div>
-        </div>
-        {{ end }}
+{{- /* 首页：Hero、最新一篇、年轮分镜。分章来自站点 data/chapters.yaml，篇数与年份统计全部构建时计算 */}}
+{{- $posts := (site.GetPage "/posts").RegularPages }}
+{{- $chapters := hugo.Data.chapters }}
+{{- $total := len $posts }}
+{{- $first := (index $posts.ByDate 0).Date.Year }}
+{{- $last := (index $posts 0).Date.Year }}
+<div class="w-full max-w-[1120px] mx-auto px-1 lg:px-0">
+  <section class="pt-7 pb-12 lg:py-0 lg:min-h-[528px] flex gap-5 lg:gap-[72px] lg:items-center">
+    {{- /* 竖排标语：第一列在右 */}}
+    <div class="flex flex-row-reverse gap-2.5 lg:gap-[18px] lg:self-stretch lg:pt-8">
+      {{- range $i, $t := site.Params.tagline }}
+      <p class="[writing-mode:vertical-rl] text-[15px] lg:text-[22px] tracking-[0.3em] lg:tracking-[0.4em] text-accent{{ if $i }} pt-12 lg:pt-[88px]{{ end }}">{{ $t }}</p>
+      {{- end }}
+    </div>
+    <div class="pt-6 lg:pt-0 flex flex-col gap-[18px] lg:gap-8">
+      <h1 class="text-[60px] lg:text-[136px] leading-[1.05] lg:leading-none tracking-[0.04em] text-ink">{{ site.Title }}</h1>
+      <p class="flex flex-wrap gap-2 lg:gap-5 font-mono text-[11px] lg:text-[13px] tracking-[0.08em] text-meta">
+        <span>{{ upper site.Params.author }}</span><span aria-hidden="true">·</span><span>SINCE {{ site.Params.since }}</span><span aria-hidden="true">·</span><span>{{ $total }} POSTS</span>
+      </p>
+    </div>
+  </section>
+
+  {{- range first 1 $posts }}
+  <section class="pt-7 pb-10 lg:pt-10 lg:pb-[120px] border-t border-strong grid lg:grid-cols-[240px_minmax(0,1fr)] gap-4 lg:gap-16">
+    <div class="flex justify-between items-baseline lg:flex-col lg:justify-start lg:gap-2.5">
+      <h2 class="text-[15px] lg:text-base tracking-[0.1em] text-accent">最新</h2>
+      <span class="font-mono text-xs lg:text-[13px] text-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time> · {{ .WordCount }} 字</span>
+    </div>
+    <div class="flex flex-col gap-4 lg:gap-6">
+      <a href="{{ .RelPermalink }}" class="text-[38px] lg:text-[52px] leading-[1.2] tracking-[0.02em] text-ink hover:text-accent">{{ .Title }}</a>
+      {{- /* 与 page.html 的 AI 总结同样式 */}}
+      {{- with .Params.description }}
+      <aside class="max-w-[688px] p-5 lg:px-7 lg:py-6 bg-tint rounded flex flex-col gap-2 lg:gap-2.5">
+        <span class="text-xs lg:text-[13px] tracking-[0.12em] text-accent">AI 总结</span>
+        <p class="text-[15px] lg:text-base leading-[1.85] lg:leading-[1.9] text-secondary">{{ . }}</p>
+      </aside>
+      {{- end }}
+      <div class="flex flex-wrap gap-x-8 text-base lg:text-[17px]">
+        <a href="{{ .RelPermalink }}" class="inline-flex items-center min-h-11">阅读全文 →</a>
+        <a href="{{ "posts/" | relURL }}" class="inline-flex items-center min-h-11">全部 {{ $total }} 篇 →</a>
       </div>
     </div>
-  </div>
-  
-  <!-- 查看所有文章按钮 - 居中 -->
-  <div class="text-center mt-10">
-    <a href="/posts/" class="btn">
-      查看所有文章
-    </a>
-  </div>
+  </section>
+  {{- end }}
+
+  {{- /* 年轮：从最早一年到最近一年每年一根柱；$owner 记录每年所属章节的序号，不属于任何章节为 -1 */}}
+  {{- $counts := slice }}
+  {{- $owner := slice }}
+  {{- range $y := seq $first $last }}
+    {{- $o := -1 }}
+    {{- range $i, $c := $chapters }}{{ if and (ge $y $c.from) (le $y $c.to) }}{{ $o = $i }}{{ end }}{{ end }}
+    {{- $counts = $counts | append (len (where $posts "Date.Year" $y)) }}
+    {{- $owner = $owner | append $o }}
+  {{- end }}
+  {{- $max := math.Max $counts }}
+  {{- /* 无 JS 时第一章点亮；main.js 滚动时改写 data-active-chapter。点亮规则按章节数生成，颜色值在 styles.css 的 .year-bar、.chapter-tone、.chapter-num */}}
+  <section data-active-chapter="0" class="border-t border-strong">
+    <style>{{ range $i, $_ := $chapters }}[data-active-chapter="{{ $i }}"] [data-chapter="{{ $i }}"]{--tone:var(--c-accent)}{{ end }}</style>
+    <header class="pt-7 pb-4 lg:pt-12 lg:pb-[76px] flex flex-wrap justify-between items-baseline lg:items-start gap-x-6 gap-y-2">
+      <div class="flex flex-wrap items-baseline gap-x-6 gap-y-2">
+        <h2 class="text-[34px] lg:text-[56px] leading-none tracking-[0.06em] text-ink">{{ partial "inline/cn-num.html" (add (sub $last $first) 1) }}年</h2>
+        <span class="font-mono text-[11px] lg:text-[13px] text-meta">{{ $first }}—{{ $last }} · {{ $total }} 篇 · {{ partial "inline/cn-num.html" (len $chapters) }}个阶段</span>
+      </div>
+      <span class="hidden lg:inline text-[15px] text-meta">向下滚动，年轮随章节点亮</span>
+    </header>
+
+    <div class="grid lg:grid-cols-[400px_minmax(0,1fr)] lg:gap-24">
+      {{- /* 手机：整块作为迷你年轮条吸顶；桌面：左列拉满高度，内层吸顶 */}}
+      <div class="sticky top-0 z-10 py-3 bg-paper border-b border-rule lg:static lg:z-auto lg:py-0 lg:bg-transparent lg:border-0">
+        <div class="flex flex-col gap-1.5 lg:gap-7 lg:sticky lg:top-8 lg:pt-2">
+          <div class="h-11 lg:h-60 flex items-end gap-[3px] lg:gap-1.5 lg:border-b lg:border-strong">
+            {{- range $j, $c := $counts }}
+            {{- $y := add $first $j }}
+            {{- $o := index $owner $j }}
+            {{- if $c }}
+            <span title="{{ $y }} · {{ $c }} 篇"{{ if ge $o 0 }} data-chapter="{{ $o }}"{{ end }} class="year-bar flex-1 min-h-[3px]" style="height: {{ div (mul $c 100.0) $max }}%"></span>
+            {{- else }}
+            <span title="{{ $y }} · 0 篇" class="flex-1 h-px lg:h-0.5 bg-rule"></span>
+            {{- end }}
+            {{- end }}
+          </div>
+          <div aria-hidden="true" class="hidden lg:flex gap-1.5 font-mono text-[11px] text-center">
+            {{- range $j, $o := $owner }}
+            <span{{ if ge $o 0 }} data-chapter="{{ $o }}"{{ end }} class="chapter-tone flex-1">{{ substr (string (add $first $j)) 2 }}</span>
+            {{- end }}
+          </div>
+          <nav aria-label="章节" class="flex justify-between lg:flex-col lg:mt-3">
+            {{- range $i, $c := $chapters }}
+            <a href="#chapter-{{ add $i 1 }}" data-chapter="{{ $i }}" class="chapter-tone inline-flex items-center justify-center min-w-11 min-h-8 text-[13px] lg:justify-start lg:gap-3 lg:min-w-0 lg:min-h-0 lg:py-3 lg:border-b lg:border-rule">
+              <span class="lg:w-7 lg:text-xl">{{ .num }}</span>
+              <span class="hidden lg:block grow text-lg">{{ .name }}</span>
+              <span class="hidden lg:block font-mono text-xs">{{ .from }}{{ if ne .from .to }}—{{ substr (string .to) 2 }}{{ end }}</span>
+            </a>
+            {{- end }}
+          </nav>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        {{- range $i, $c := $chapters }}
+        {{- $pages := where (where $posts "Date.Year" "ge" .from) "Date.Year" "le" .to }}
+        {{- $picks := slice }}
+        {{- range .picks }}
+          {{- with where $posts "Title" . }}{{ $picks = $picks | append (index . 0) }}{{ else }}{{ warnf "data/chapters.yaml：「%s」章的代表作「%v」没有同名文章" $c.name . }}{{ end }}
+        {{- end }}
+        <article id="chapter-{{ add $i 1 }}" data-chapter="{{ $i }}" class="py-7 lg:py-0 lg:pt-2 lg:min-h-[max(640px,60vh)] flex flex-col gap-2.5 lg:gap-6 border-b border-rule last:border-0 lg:border-0 scroll-mt-28 lg:scroll-mt-8">
+          <header class="flex flex-wrap items-baseline gap-x-3 lg:gap-x-5">
+            <span class="chapter-num text-[40px] lg:text-[72px] leading-none">{{ .num }}</span>
+            <h3 class="text-2xl lg:text-4xl text-ink">{{ .name }}</h3>
+            <span class="font-mono text-[11px] lg:text-[13px] text-meta">{{ .from }}{{ if ne .from .to }}—{{ .to }}{{ end }} · {{ len $pages }} 篇</span>
+          </header>
+          <p class="max-w-[560px] text-[15px] lg:text-[19px] leading-[1.8] lg:leading-[1.9] text-secondary">{{ .desc }}</p>
+
+          {{- if .photos }}
+          <div class="flex flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-8 lg:items-start">
+            {{ template "chapter-picks" $picks }}
+            {{- /* 纸质照片拼贴，链接到第一篇代表作 */}}
+            {{- range first 1 $picks }}
+            {{- $lead := . }}
+            <div class="order-first lg:order-none flex lg:flex-col pt-3 pb-5 lg:py-0 lg:pt-1">
+              {{- range $c.photos }}
+              <a href="{{ $lead.RelPermalink }}" aria-label="查看文章：{{ $lead.Title }}" class="chapter-photo"><img src="{{ .src }}" alt="{{ .alt }}" loading="lazy"></a>
+              {{- end }}
+            </div>
+            {{- end }}
+          </div>
+          {{- else if $picks }}
+          {{ template "chapter-picks" $picks }}
+          {{- end }}
+
+          {{- /* 最近 N 篇：「标题 | 日期」沿中轴对称 */}}
+          {{- with .recent }}
+          <div class="relative flex flex-col py-2">
+            <span aria-hidden="true" class="absolute left-1/2 inset-y-0 w-px bg-rule"></span>
+            {{- range first . $pages }}
+            <a href="{{ .RelPermalink }}" class="grid grid-cols-2 gap-6 lg:gap-12 py-2 lg:py-[9px] text-ink hover:text-accent">
+              <span class="text-right text-base lg:text-xl">{{ .Title }}</span>
+              <span class="pt-1 lg:pt-1.5 font-mono text-[11px] lg:text-xs text-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time> · {{ .WordCount }} 字</span>
+            </a>
+            {{- end }}
+          </div>
+          {{- end }}
+
+          {{- if eq (add $i 1) (len $chapters) }}
+          <div class="mt-2 lg:mt-4 flex flex-col lg:flex-row gap-3 lg:gap-4 text-base">
+            <a href="{{ "posts/" | relURL }}" class="h-12 px-7 flex items-center justify-center rounded bg-accent-fill text-on-accent-fill hover:text-on-accent-fill">查看全部文章</a>
+            <a href="{{ "archives/" | relURL }}" class="h-12 px-7 flex items-center justify-center rounded border border-accent text-accent hover:border-accent-hover">按年份浏览</a>
+          </div>
+          {{- end }}
+        </article>
+        {{- end }}
+      </div>
+    </div>
+  </section>
+</div>
+{{ end }}
+
+{{- /* 代表作卡片：标题、日期 · 字数、AI 总结的第一句 */}}
+{{ define "chapter-picks" }}
+<div class="flex flex-col border-t border-rule">
+  {{- range . }}
+  <a href="{{ .RelPermalink }}" class="group flex flex-col gap-1.5 lg:gap-2 py-4 lg:py-[22px] border-b border-rule text-ink hover:text-ink">
+    <span class="flex flex-wrap justify-between items-baseline gap-x-4 gap-y-1">
+      <span class="text-lg lg:text-2xl group-hover:text-accent">{{ .Title }}</span>
+      <span class="font-mono text-[11px] lg:text-xs text-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time> · {{ .WordCount }} 字</span>
+    </span>
+    {{- with .Params.description }}
+    {{- $s := index (split . "。") 0 }}
+    <span class="text-[15px] leading-[1.8] text-meta">{{ $s }}{{ if ne $s . }}。{{ end }}</span>
+    {{- end }}
+  </a>
+  {{- end }}
+</div>
+{{ end }}
+
+{{- /* 1–99 的中文数字，用于「十五年」「五个阶段」。ponytail: 只到 99，写作跨度与章节数都远小于此 */}}
+{{ define "_partials/inline/cn-num.html" }}
+{{- $d := slice "" "一" "二" "三" "四" "五" "六" "七" "八" "九" }}
+{{- $t := div . 10 }}
+{{- $s := index $d (mod . 10) }}
+{{- if $t }}{{ $s = printf "%s十%s" (cond (eq $t 1) "" (index $d $t)) $s }}{{ end }}
+{{- return $s }}
 {{ end }}

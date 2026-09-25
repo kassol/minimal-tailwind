@@ -6,19 +6,20 @@
 
 ## 目录结构
 
-- `layouts/` - 模板。页面模板：`home.html`、`section.html`、`page.html`、`taxonomy.html`、`term.html`、`archives.html`（站点 `content/archives.md` 以 `layout: archives` 选用）、`404.html`；外壳 `baseof.html`
+- `layouts/` - 模板。页面模板：`home.html`（Hero、最新、年轮分镜，读站点 `data/chapters.yaml`）、`section.html`、`page.html`、`taxonomy.html`、`term.html`、`archives.html`（站点 `content/archives.md` 以 `layout: archives` 选用）、`404.html`；外壳 `baseof.html`
 - `layouts/_partials/` - 组件（Hugo 只查找 `_partials/`）。`seal.html` 为 2×2 方印，页眉页脚共用；`post-list.html` 为文章列表，`section.html` 与 `term.html` 共用
 - `layouts/_default/_markup/` - Markdown 渲染钩子：`render-link.html`（外链新标签页 + ↗）、`render-image.html`（纸质照片 + 灯箱）
 - `assets/css/styles.css` - Tailwind 入口、设计 token（`--c-*` CSS 变量，明暗两套）、组件样式
-- `assets/js/main.js` - 外观切换、目录高亮、GLightbox 初始化
+- `assets/js/main.js` - 外观切换、目录高亮、年轮点亮、GLightbox 初始化
 - `static/fonts/` - 自托管的 IBM Plex Mono（拉丁子集 400/500）及其 OFL 许可
 
 ## 模块规范
 
 - 所有页面模板定义 `{{ define "main" }}`，继承 `baseof.html`
-- 颜色只用设计 token，不写死十六进制值。`wine-*` 只是给旧模板的过渡别名，新代码用 token 名
-- 暗色受站点 `params.darkMode` 控制：false 时 `<html data-theme="light">`，不输出防闪脚本与外观切换
-- 站点身份从站点 params 读取：`seal`、`tagline`、`since`；favicon 由站点 `static/` 提供，主题只写 `<link>`
+- 颜色只用设计 token，不写死十六进制值
+- 外观三态已启用：明暗 token 常驻，`head.html` 防闪脚本与页眉外观切换始终输出
+- 模板不写死叙事数据：章名、年份、代表作只从站点 `data/chapters.yaml` 读取，篇数与年度统计构建时计算
+- 站点身份从站点 params 读取：`seal`、`tagline`、`since`、`author`；favicon 由站点 `static/` 提供，主题只写 `<link>`
 - 不从 staticfile / bootcdn / bootcss / polyfill.io 等域名加载任何资源
 - Tailwind 配置在站点根目录的 `tailwind.config.ts`，其 `content` 会扫描本主题的 `layouts/` 与 `assets/`
 
@@ -31,6 +32,14 @@
 - IBM Plex Mono（`@fontsource/ibm-plex-mono` 的 woff2，只复制文件，OFL）
 
 ## 变更日志
+
+### 2026-09-25 阶段 4：首页年轮分镜，启用暗色
+- `home.html` 重写：Hero（竖排标语 + 大号站名 +「作者 · SINCE · N POSTS」）、「最新」（标题 + AI 总结 + 链接）、「N 年」分镜。年份跨度与阶段数由数据算出并转成中文数字（行内 partial `cn-num`，只到 99）
+- 分镜读站点 `data/chapters.yaml`：每年一根柱（零篇画细线，柱高按峰值归一）、章节目录、每章篇数；代表作按标题在 `/posts` 中匹配，找不到时 `warnf` 但不中断构建；`photos` 渲染为纸质照片拼贴，`recent: N` 渲染为「标题 | 日期」中轴对称的最新 N 篇
+- 点亮机制：年份柱、年份标签、目录项、章序带 `data-chapter`（章节序号），分镜 section 的 `data-active-chapter` 默认 0（无 JS 时第一章点亮）；模板按章节数生成 `[data-active-chapter=i] [data-chapter=i] { --tone }` 规则，`styles.css` 的 `.year-bar` / `.chapter-tone` / `.chapter-num` 据此取色；`main.js` 的 `initChapterRing` 用 IntersectionObserver 在章节顶部越过视口 40% 时改写 `data-active-chapter`；桌面每章最小高度 `max(640px, 60vh)`，高屏上滚到底时最后一章也能越过这条线
+- 桌面左列 400px 吸顶；手机（<1024px）改为顶部吸顶的迷你年轮条 + 章序，照片缩小横向叠放，按钮全宽；减少动效时去掉过渡与照片旋转
+- 删除 `params.darkMode` 分支：`baseof.html` 不再输出 `data-theme="light"`，防闪脚本与外观切换常驻
+- 删除旧首页专用的 `.btn`
 
 ### 2026-09-25 阶段 3 收尾
 - 404 页 `<title>` 改为「此页不在这里 | 站名」

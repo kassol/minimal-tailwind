@@ -26,7 +26,7 @@
     --c-on-accent-fill: 250 248 244;
   }
 
-  /* 暗色：手动选择深色，或跟随系统且系统为深色。站点 params.darkMode = false 时 <html data-theme="light">，两条都不生效 */
+  /* 暗色：手动选择深色，或跟随系统且系统为深色（手动选择浅色时 <html data-theme="light">，两条都不生效） */
   :root[data-theme="dark"] {
     color-scheme: dark;
     --c-paper: 22 19 17;
@@ -113,10 +113,58 @@
 }
 
 @layer components {
-  .btn {
-    @apply px-4 py-2 bg-accent-fill text-on-accent-fill rounded-lg hover:bg-accent-hover hover:text-on-accent-fill transition-colors;
+  /* 首页年轮分镜：home.html 按章节生成 [data-active-chapter="i"] [data-chapter="i"] { --tone } 规则，被点亮的元素改用强调色 */
+  .year-bar {
+    background-color: rgb(var(--tone, var(--c-muted)));
+    transition: background-color 0.3s;
   }
-  
+
+  .chapter-tone {
+    color: rgb(var(--tone, var(--c-meta)));
+    transition: color 0.3s;
+  }
+
+  .chapter-num {
+    color: rgb(var(--tone, var(--c-rule)));
+    transition: color 0.3s;
+  }
+
+  /* 分镜里的纸质照片拼贴：与文章页 .photo 同样的相框与阴影，第二张错位叠压 */
+  .chapter-photo {
+    @apply block shrink-0 w-[180px] h-[135px] p-2 rounded-sm lg:w-60 lg:h-[180px] lg:p-2.5;
+    background: rgb(var(--c-frame));
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+    transform: rotate(-2deg);
+    transition: transform 0.3s ease;
+  }
+
+  .chapter-photo + .chapter-photo {
+    @apply mt-5 -ml-[30px] lg:-mt-9 lg:ml-7;
+    transform: rotate(2.5deg);
+  }
+
+  .chapter-photo:hover {
+    transform: none;
+  }
+
+  .chapter-photo img {
+    @apply block w-full h-full object-cover;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .year-bar,
+    .chapter-tone,
+    .chapter-num {
+      transition: none;
+    }
+
+    .chapter-photo,
+    .chapter-photo + .chapter-photo {
+      transform: none;
+      transition: none;
+    }
+  }
+
   /* 文章目录：左侧 1px 细线，当前项用强调色竖线盖住细线；缩进放在链接上，竖线才能对齐 */
   .toc nav > ul {
     @apply border-l border-rule;
