@@ -19,6 +19,8 @@
     --c-accent: 185 28 28;
     --c-accent-hover: 153 27 27;
     --c-muted: 221 179 174;
+    /* 纸质照片相框 */
+    --c-frame: 255 255 255;
     /* 印章、主按钮底：明暗相同 */
     --c-accent-fill: 185 28 28;
     --c-on-accent-fill: 250 248 244;
@@ -38,6 +40,7 @@
     --c-accent: 239 100 97;
     --c-accent-hover: 245 138 134;
     --c-muted: 91 52 49;
+    --c-frame: 233 227 218;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -54,6 +57,7 @@
       --c-accent: 239 100 97;
       --c-accent-hover: 245 138 134;
       --c-muted: 91 52 49;
+      --c-frame: 233 227 218;
     }
   }
 
@@ -146,88 +150,96 @@
     overflow: hidden;
   }
   
-  /* TOC样式 - Wine色彩系统 */
-  .toc-nav {
-    @apply lg:w-64 lg:flex-shrink-0 lg:sticky lg:top-8 lg:self-start mb-8 lg:mb-0;
+  /* 文章目录：左侧 1px 细线，当前项用强调色竖线盖住细线；缩进放在链接上，竖线才能对齐 */
+  .toc nav > ul {
+    @apply border-l border-rule;
   }
-  
-  .toc-header {
-    @apply flex items-center justify-between pb-3 border-b border-rule mb-4;
+
+  .toc ul {
+    @apply list-none m-0 p-0;
   }
-  
-  .toc-title {
-    @apply text-lg text-ink;
+
+  .toc a {
+    @apply block -ml-px border-l border-transparent py-2.5 lg:py-1.5 pl-4 text-[15px] leading-snug text-secondary hover:text-accent;
   }
-  
-  .toc-toggle {
-    @apply text-meta hover:text-accent p-1 rounded;
+
+  .toc ul ul a {
+    @apply pl-8 text-sm text-meta;
   }
-  
-  .toc-content {
-    @apply lg:block;
+
+  /* 只有 H3 的文章：Hugo 会包一层没有链接的 <li>，这一层不缩进 */
+  .toc li:not(:has(> a)) > ul > li > a {
+    @apply pl-4 text-[15px] text-secondary;
   }
-  
-  /* TOC列表样式 */
-  .toc-nav ul {
-    @apply list-none p-0 m-0 space-y-1;
+
+  .toc a.active {
+    @apply border-accent text-accent;
   }
-  
-  .toc-nav ul ul {
-    @apply ml-4 mt-1 space-y-1;
+
+  /* 正文 H2 前的两位序号 */
+  .article-body {
+    counter-reset: h2;
   }
-  
-  .toc-nav li {
-    @apply m-0;
+
+  .article-body h2::before {
+    counter-increment: h2;
+    content: counter(h2, decimal-leading-zero);
+    @apply mr-3 font-mono text-[0.6em] text-muted;
   }
-  
-  .toc-nav a {
-    @apply block py-1 px-2 text-sm text-meta hover:text-accent hover:bg-tint rounded transition-all duration-200 no-underline;
+
+  /* 外链：视觉上的 ↗，不进入可访问名称 */
+  .prose a[target="_blank"]::after {
+    content: "↗";
+    content: "↗" / "";
+    margin-left: 0.15em;
   }
-  
-  .toc-nav a.active {
-    @apply text-accent bg-tint;
+
+  /* 纸质照片（render-image.html）：相框在 <a> 上，4:3 画框，奇偶交替旋转，悬停转正 */
+  .prose .photo {
+    @apply my-8 flex flex-col items-start gap-3;
   }
-  
-  /* 移动端TOC样式 */
-  @media (max-width: 1023px) {
-    .toc-nav {
-      @apply bg-tint border border-rule rounded-lg p-4;
+
+  .prose .photo > a {
+    @apply block w-full max-w-[520px] p-3 rounded-sm cursor-zoom-in;
+    background: rgb(var(--c-frame));
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+    transform: rotate(-0.8deg);
+    transition: transform 0.3s ease;
+  }
+
+  .prose .photo img {
+    @apply m-0 block w-full aspect-[4/3] object-cover;
+  }
+
+  .prose .photo figcaption {
+    @apply m-0 px-4 font-mono text-xs text-meta;
+  }
+
+  .prose .photo:nth-of-type(even) {
+    @apply items-end;
+  }
+
+  .prose .photo:nth-of-type(even) > a {
+    transform: rotate(0.6deg);
+  }
+
+  .prose .photo > a:hover {
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .prose .photo > a,
+    .prose .photo:nth-of-type(even) > a {
+      transform: none;
+      transition: none;
     }
   }
-  
-  /* 纸质照片风格 - 覆盖prose默认样式 */
-  .prose img {
-    background: white !important;
-    padding: 12px !important;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1) !important;
-    transform: rotate(-0.5deg) !important;
-    transition: transform 0.3s ease !important;
-    cursor: pointer !important;
-    
-    /* 固定画框 - 4:3比例 */
-    width: 100% !important;
-    max-width: 600px !important;
-    height: 400px !important;
-    object-fit: cover !important;
-    border-radius: 2px !important;
-    margin: 20px auto !important;
-    display: block !important;
+
+  /* 图片与文字同段时，浏览器把 <figure> 拆出 <p>，留下的空段落不占位 */
+  .prose p:empty {
+    display: none;
   }
-  
-  .prose img:hover {
-    transform: rotate(0deg) scale(1.02) !important;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
-  }
-  
-  /* 响应式 */
-  @media (max-width: 768px) {
-    .prose img {
-      height: 250px !important;
-      max-width: 400px !important;
-      padding: 8px !important;
-    }
-  }
-  
+
   /* 禁用 prose 插件的 blockquote 双引号装饰 */
   .prose blockquote p:before,
   .prose blockquote p:after {

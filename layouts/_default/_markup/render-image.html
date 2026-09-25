@@ -1,0 +1,3 @@
+{{- /* 纸质照片：外层 <a> 供 GLightbox 放大（main.js 以 [data-glightbox] 初始化）。
+  图片多与文字同段，<figure> 会落在 <p> 内，浏览器解析时把它拆到段落之外；由此产生的空 <p> 在 styles.css 中隐藏 */ -}}
+<figure class="photo"><a href="{{ .Destination | safeURL }}" data-glightbox data-gallery="post-images" aria-label="放大查看{{ with .PlainText }}：{{ . }}{{ end }}"><img src="{{ .Destination | safeURL }}" alt="{{ .PlainText }}" loading="lazy" decoding="async"></a>{{ with .Title }}<figcaption>{{ . }}</figcaption>{{ end }}</figure>

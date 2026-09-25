@@ -8,7 +8,7 @@
 
 - `layouts/` - 模板。页面模板：`home.html`、`section.html`、`page.html`、`taxonomy.html`、`term.html`；外壳 `baseof.html`
 - `layouts/_partials/` - 组件（Hugo 只查找 `_partials/`）。`seal.html` 为 2×2 方印，页眉页脚共用
-- `layouts/_default/_markup/` - Markdown 渲染钩子
+- `layouts/_default/_markup/` - Markdown 渲染钩子：`render-link.html`（外链新标签页 + ↗）、`render-image.html`（纸质照片 + 灯箱）
 - `assets/css/styles.css` - Tailwind 入口、设计 token（`--c-*` CSS 变量，明暗两套）、组件样式
 - `assets/js/main.js` - 外观切换、目录高亮、GLightbox 初始化
 - `static/fonts/` - 自托管的 IBM Plex Mono（拉丁子集 400/500）及其 OFL 许可
@@ -31,6 +31,16 @@
 - IBM Plex Mono（`@fontsource/ibm-plex-mono` 的 woff2，只复制文件，OFL）
 
 ## 变更日志
+
+### 2026-09-25 阶段 2：文章页
+- `page.html` 重写：内容区 1120，桌面正文 688 + 右侧目录 224，手机单列；返回链接、56px 标题、等宽元信息行（日期 · 分类 · 字数 · 约 N 分钟，取 `.WordCount` / `.ReadingTime`，依赖站点 `hasCJKLanguage`）
+- AI 总结改为胭脂底圆角块 + 小号强调色标签，去掉左边框与图标
+- 正文 H2 前加两位序号（`.article-body` 的 CSS counter）；外链追加 `rel="noopener noreferrer"`，`.prose` 内新标签页链接用 `::after` 显示 ↗（替代文本为空）
+- 新增 `render-image.html`：`<figure class="photo">` + 指向原图的 `<a data-glightbox>` + 懒加载 `<img>` + 有 title 时 `<figcaption>`。纸质样式从 `.prose img` 的 `!important` 规则迁到 `.photo`：相框色 `--c-frame`（明暗两套）、4:3 画框、奇偶交替 -0.8° / 0.6° 并左右交替、悬停转正、减少动效时不旋转。图片与文字同段时浏览器会把 `<figure>` 拆出 `<p>`，残留空段落用 `.prose p:empty` 隐藏
+- `main.js` 不再包裹图片，GLightbox 仍按 `[data-glightbox]` 初始化；目录折叠改为切换 `hidden` 与 `aria-expanded`
+- `toc.html` 重写：桌面 sticky，细线 + 当前项强调色竖线，H3 缩进；手机为「目录 · N 节 ▾」按钮；没有标题的文章不渲染（此前 44 篇输出空目录）
+- `post-navigation.html` 重写为上一篇（更早）/ 下一篇两栏；文末新增「同分类」按日期离本篇最近的 3 篇
+- 删除 `_partials/terms.html`（没有文章设置 tags，设计稿也不展示）；`page.html` 不再处理 `cover`、`author`、`reading_time`（没有文章使用）
 
 ### 2026-09-25 清理写死的颜色与死代码
 - `styles.css` 中 code、pre、blockquote、按钮、卡片、目录的 gray/white/black 改为设计 token，随明暗切换；blockquote 改为 2px 粗分隔线、不再斜体

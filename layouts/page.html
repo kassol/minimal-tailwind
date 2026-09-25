@@ -1,77 +1,60 @@
 {{ define "main" }}
-<article class="max-w-6xl mx-auto px-6">
-  <!-- Article Header -->
-  <header class="mb-12">
-    <h1 class="text-3xl md:text-4xl text-black mb-6 leading-tight">{{ .Title }}</h1>
-    
-    <!-- Meta Information -->
-    <div class="flex flex-wrap items-center text-sm text-gray-600 mb-8 space-x-6">
-      <div class="flex items-center">
-        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time>
-      </div>
-      
-      {{ with .Params.author }}
-      <div class="flex items-center">
-        <span>作者：{{ . }}</span>
-      </div>
-      {{ end }}
-      
-      {{ with .Params.categories }}
-      <div class="flex items-center">
-        <span>分类：</span>
-        <div class="flex flex-wrap gap-2 ml-1">
-          {{ range . }}
-          <a href="{{ $.Site.Taxonomies.categories.Page.RelPermalink }}{{ . | urlize }}/" class="text-wine-600 hover:text-wine-700 transition-colors font-medium">
-            {{ . }}
-          </a>
-          {{ end }}
-        </div>
-      </div>
-      {{ end }}
-      
-      {{ with .Params.reading_time }}
-      <div class="flex items-center">
-        <span>{{ . }} 分钟阅读</span>
-      </div>
-      {{ end }}
+{{- $terms := .GetTerms "categories" }}
+{{- /* 桌面两栏：正文 688 + 目录 224，目录从 AI 总结那一行开始；手机单列，目录按钮在 AI 总结与正文之间。main 已有 16px 边距，px-1 补到 20px */}}
+<article class="w-full max-w-[1120px] mx-auto px-1 lg:px-0 grid lg:grid-cols-[688px_224px] lg:justify-between">
+  <header class="lg:col-start-1">
+    <a href="{{ "posts/" | relURL }}" class="inline-block py-2.5 lg:py-0 text-sm text-meta hover:text-accent">← 返回文章列表</a>
+    <h1 class="mt-4 mb-3.5 lg:mt-8 lg:mb-5 text-[40px] lg:text-[56px] leading-[1.15] tracking-[0.02em] text-ink">{{ .Title }}</h1>
+    <div class="flex flex-wrap gap-x-2.5 md:gap-x-4 font-mono text-xs md:text-[13px] text-meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format site.Params.dateFormat }}</time>
+      {{- range $terms }}
+      <span aria-hidden="true">·</span><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+      {{- end }}
+      <span aria-hidden="true">·</span><span>{{ .WordCount }} 字</span>
+      <span aria-hidden="true">·</span><span>约 {{ .ReadingTime }} 分钟</span>
     </div>
-    
-    <!-- Cover Image -->
-    {{ with .Params.cover }}
-    <img src="{{ . }}" alt="{{ .Title }}" class="w-full h-64 md:h-96 object-cover rounded-lg mb-8 shadow-lg">
-    {{ end }}
-    
-    <!-- AI Summary / TL;DR -->
-    {{ with .Params.description }}
-    <div class="bg-tint border-l-4 border-accent p-6 mb-10 rounded-r-lg">
-      <div class="flex items-center mb-3">
-        <svg class="w-5 h-5 text-accent mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-        </svg>
-        <span class="text-accent text-sm uppercase tracking-wide">AI 总结</span>
-      </div>
-      <p class="text-secondary leading-relaxed">{{ . }}</p>
-    </div>
-    {{ end }}
   </header>
-  
-  <!-- Main Content Layout with TOC -->
-  <div class="flex flex-col lg:flex-row lg:gap-12">
-    <!-- Table of Contents (Mobile: Top, Desktop: Right Sidebar) -->
-    <div class="order-1 lg:order-2">
-      {{ partial "toc.html" . }}
-    </div>
-    
-    <!-- Article Content -->
-    <div class="order-2 lg:order-1 flex-1 prose prose-lg max-w-none prose-a:no-underline prose-a:hover:text-accent-hover prose-code:bg-tint">
-      {{ .Content }}
-    </div>
+
+  {{ with .Params.description }}
+  <aside class="lg:col-start-1 mt-7 lg:mt-10 p-5 lg:px-7 lg:py-6 bg-tint rounded flex flex-col gap-2 lg:gap-2.5">
+    <span class="text-xs lg:text-[13px] tracking-[0.12em] text-accent">AI 总结</span>
+    <p class="text-[15px] lg:text-base leading-[1.85] lg:leading-[1.9] text-secondary">{{ . }}</p>
+  </aside>
+  {{ end }}
+
+  {{ partial "toc.html" . }}
+
+  <div class="lg:col-start-1 mt-9 lg:mt-12 article-body prose prose-lg max-w-none leading-[2] prose-a:no-underline prose-a:hover:text-accent-hover prose-code:bg-tint">
+    {{ .Content }}
   </div>
-  
-  <!-- Tags -->
-  {{ partial "terms.html" (dict "taxonomy" "tags" "page" .) }}
-  
-  <!-- Post Navigation -->
-  {{ partial "post-navigation.html" . }}
+
+  <footer class="lg:col-start-1">
+    {{ partial "post-navigation.html" . }}
+
+    {{- /* 同分类：按日期离本篇最近的 3 篇（前后都算） */}}
+    {{ with $terms }}
+    {{ $term := index . 0 }}
+    {{ $near := slice }}
+    {{ range $term.Pages }}
+      {{ if ne .RelPermalink $.RelPermalink }}
+        {{ $near = $near | append (dict "d" (math.Abs (sub .Date.Unix $.Date.Unix)) "p" .) }}
+      {{ end }}
+    {{ end }}
+    {{ with $near }}
+    <section class="mt-12 flex flex-col">
+      <div class="flex justify-between items-baseline pb-3 border-b border-strong">
+        <h2 class="text-base tracking-[0.1em] text-accent">同分类 · {{ $term.LinkTitle }}</h2>
+        <a href="{{ $term.RelPermalink }}" class="text-sm">更多 →</a>
+      </div>
+      {{ range first 3 (sort . "d") }}
+      <a href="{{ .p.RelPermalink }}" class="grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1fr)_120px] gap-6 py-4 border-b border-rule text-lg text-ink hover:text-accent">
+        <span>{{ .p.Title }}</span>
+        <time datetime="{{ .p.Date.Format "2006-01-02" }}" class="pt-1 text-right font-mono text-[13px] text-meta">{{ .p.Date.Format site.Params.dateFormat }}</time>
+      </a>
+      {{ end }}
+    </section>
+    {{ end }}
+    {{ end }}
+  </footer>
 </article>
 {{ end }}
