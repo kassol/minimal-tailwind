@@ -36,6 +36,7 @@
 - `styles.css` 中 code、pre、blockquote、按钮、卡片、目录的 gray/white/black 改为设计 token，随明暗切换；blockquote 改为 2px 粗分隔线、不再斜体
 - 删除未被引用的 `_partials/menu.html`
 - 删除从未被选用的 `_default/single.html`、`_default/list.html`（删除前后 HTML 产物一致）
+- 正文（`.prose`）颜色改由站点 `tailwind.config.ts` 的 typography 配置统一指向 token，文章页去掉 `prose-*:text-black`、`prose-blockquote:*` 等颜色修饰类；基础层 `blockquote` 规则对 `.prose` 内的引用块不生效
 - 文章页 AI 总结块从 Tailwind 默认红改为 token；正文链接悬停改为 `prose-a:hover:`（原 `hover:prose-a:` 实际是悬停整个正文时生效）
 
 ### 2026-09-25 阶段 1：基础层
