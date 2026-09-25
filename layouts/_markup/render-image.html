@@ -1,6 +1,7 @@
 {{- /* 独占成段的图片（需 goldmark wrapStandAloneImageWithinParagraph = false）渲染为纸质照片 <figure>；
   夹在文字中的图片只能是行内元素，输出不带相框的 <img>。两种都由 main.js 以 [data-glightbox] 接入灯箱 */ -}}
-{{- $label := printf "放大查看%s" (cond (ne .PlainText "") (printf "：%s" .PlainText) "") -}}
+{{- /* 可访问名称带序号（.Ordinal 从 0 起，统计全文图片），同一篇里多张无替代文本的图才能区分 */ -}}
+{{- $label := printf "放大查看第 %d 张图%s" (add .Ordinal 1) (cond (ne .PlainText "") (printf "：%s" .PlainText) "") -}}
 {{- if .IsBlock -}}
 <figure class="photo"><a href="{{ .Destination | safeURL }}" data-glightbox data-gallery="post-images" aria-label="{{ $label }}"><img src="{{ .Destination | safeURL }}" alt="{{ .PlainText }}" loading="lazy" decoding="async"></a>{{ with .Title }}<figcaption>{{ . }}</figcaption>{{ end }}</figure>
 {{- else -}}

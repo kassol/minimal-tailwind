@@ -31,12 +31,15 @@
   <footer class="lg:col-start-1">
     {{ partial "post-navigation.html" . }}
 
-    {{- /* 同分类：按日期离本篇最近的 3 篇（前后都算） */}}
+    {{- /* 同分类：按日期离本篇最近的 3 篇（前后都算），跳过上面已列出的上一篇、下一篇（post-navigation.html 的 PrevInSection / NextInSection） */}}
     {{ with $terms }}
     {{ $term := index . 0 }}
+    {{ $skip := slice $.RelPermalink }}
+    {{ with $.PrevInSection }}{{ $skip = $skip | append .RelPermalink }}{{ end }}
+    {{ with $.NextInSection }}{{ $skip = $skip | append .RelPermalink }}{{ end }}
     {{ $near := slice }}
     {{ range $term.Pages }}
-      {{ if ne .RelPermalink $.RelPermalink }}
+      {{ if not (in $skip .RelPermalink) }}
         {{ $near = $near | append (dict "d" (math.Abs (sub .Date.Unix $.Date.Unix)) "p" .) }}
       {{ end }}
     {{ end }}

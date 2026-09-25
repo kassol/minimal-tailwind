@@ -96,6 +96,13 @@
     @apply bg-paper text-body;
   }
 
+  /* 锚点跳转（目录、首页章节）平滑滚动；减少动态效果时直接跳 */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
   a {
     @apply text-accent hover:text-accent-hover transition-colors;
   }
@@ -110,10 +117,6 @@
   
   pre code {
     @apply bg-transparent text-inherit p-0;
-  }
-  
-  blockquote {
-    @apply border-l-2 border-strong pl-4 text-meta my-4;
   }
   
   /* 全局强制覆盖prose插件 */
@@ -198,6 +201,11 @@
   /* 正文 H2 前的两位序号 */
   .article-body {
     counter-reset: h2;
+  }
+
+  /* 目录跳转后标题上方留白；页眉不吸顶，不需要让出页眉高度 */
+  .article-body :is(h2, h3, h4) {
+    @apply scroll-mt-6;
   }
 
   .article-body h2::before {
@@ -310,5 +318,11 @@
   .prose blockquote p:before,
   .prose blockquote p:after {
     content: none !important;
+  }
+
+  /* 禁用 prose 插件给行内代码加的反引号 */
+  .prose code::before,
+  .prose code::after {
+    content: none;
   }
 }
