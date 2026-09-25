@@ -294,6 +294,8 @@
 
   .about-body dd a {
     @apply font-mono text-[15px];
+    /* 等宽网址不会自然断行，窄屏上会撑出横向滚动 */
+    overflow-wrap: anywhere;
   }
 
   /* 减少动态效果：全站过渡与动画归零（照片旋转另在各自规则里取消） */

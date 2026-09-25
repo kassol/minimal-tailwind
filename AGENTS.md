@@ -34,6 +34,9 @@
 
 ## 变更日志
 
+### 2026-09-25 关于页窄屏溢出
+- 关于页等宽网址加 `overflow-wrap: anywhere`，修复 360px 宽度下横向溢出 24px
+
 ### 2026-09-25 手机页眉
 - 手机（<768px）页眉只留方印 + 站名与两个 44px 图标按钮：搜索（打开现有浮层）、菜单。导航、外观切换、RSS 移出手机页眉；桌面页眉不变。替代阶段 5「页眉右侧组允许换行、手机上分两行」的做法
 - 菜单：`header.html` 内的原生 popover（`#site-menu`，按钮 `popovertarget`），点外部与 Esc 关闭、关闭后焦点回到菜单按钮均由浏览器处理；面板为纸色底、细线分隔、52px 行高，列出 `site.Menus.main` 与 RSS，当前页（`RelPermalink` 以菜单 URL 开头，文章页亮「文章」）强调色 + 圆点并带 `aria-current`。`main.js` 的 `initMenu` 在打开前把面板贴到页眉下沿，并同步按钮 `aria-expanded`。不支持 popover 的浏览器（Safari 17 以前）菜单按钮无效
