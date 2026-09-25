@@ -6,6 +6,14 @@
       <h1 class="text-[40px] lg:text-[56px] leading-[1.15] tracking-[0.04em] text-ink">此页不在这里</h1>
       <p class="text-[17px] lg:text-[19px] leading-[1.9] text-secondary">可能已被移走，或者从未存在过。</p>
     </div>
+    {{- /* 回车后在搜索浮层中显示结果（main.js initSearch）；无 JS 时隐藏 */}}
+    <form role="search" data-search-form class="flex flex-col gap-2">
+      <label for="nf-q" class="text-[15px] text-meta">搜索文章</label>
+      <div class="h-12 px-3.5 flex items-center gap-3 border border-meta/40 focus-within:border-accent rounded bg-paper">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" class="shrink-0 text-meta"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="nf-q" name="q" type="search" enterkeyhint="search" autocomplete="off" placeholder="标题或正文里的词" class="flex-1 min-w-0 h-11 bg-transparent border-0 p-0 outline-none text-[17px] text-ink placeholder:text-meta">
+      </div>
+    </form>
     <div class="flex flex-wrap gap-4">
       <a href="{{ site.Home.RelPermalink }}" class="h-12 px-7 inline-flex items-center rounded bg-accent-fill text-on-accent-fill hover:bg-accent-fill/90 hover:text-on-accent-fill">回到首页</a>
       <a href="{{ "archives/" | relURL }}" class="h-12 px-7 inline-flex items-center rounded border border-accent">按年份浏览</a>

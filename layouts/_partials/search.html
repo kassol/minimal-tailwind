@@ -1,0 +1,28 @@
+{{- /* 搜索浮层：页眉按钮（data-search-open）、⌘K / Ctrl+K、404 表单（data-search-form）打开；main.js 的 initSearch 首次打开时加载索引。
+     整个 <dialog> 铺满视口充当遮罩，面板在其中；点击遮罩关闭。无 JS 时入口由 head.html 的 noscript 样式隐藏 */}}
+<dialog id="search" aria-label="搜索文章" data-search-index="{{ partialCached "search-index.html" . }}" class="fixed inset-0 w-full h-full max-w-none max-h-none m-0 border-0 px-4 pt-4 pb-4 md:pt-[120px] bg-[rgb(var(--c-scrim)/0.45)] backdrop:bg-transparent">
+  <div class="mx-auto w-full max-w-[640px] max-h-full flex flex-col bg-paper rounded [box-shadow:var(--shadow-dialog)]">
+    <div class="h-16 shrink-0 px-5 flex items-center gap-3.5 border-b border-rule">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" class="shrink-0 text-meta"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <label for="search-q" class="sr-only">搜索文章</label>
+      <input id="search-q" type="search" role="combobox" aria-expanded="false" aria-controls="search-results" aria-autocomplete="list" autocomplete="off" enterkeyhint="go" placeholder="搜索文章标题与正文" class="flex-1 min-w-0 h-11 bg-transparent border-0 p-0 outline-none text-xl text-ink placeholder:text-meta">
+      <kbd class="hidden md:inline px-1.5 py-0.5 border border-rule rounded-[3px] font-mono text-[11px] text-meta">esc</kbd>
+      <button type="button" data-search-close class="md:hidden shrink-0 min-h-11 text-[15px] text-accent">取消</button>
+    </div>
+    <p data-search-status role="status" class="shrink-0 px-5 pt-3.5 pb-1.5 font-mono text-xs text-meta empty:hidden"></p>
+    <div id="search-results" role="listbox" aria-label="搜索结果" class="min-h-0 flex flex-col px-2 pb-2 overflow-y-auto overscroll-contain empty:hidden"></div>
+    <p data-search-empty hidden class="px-5 pt-4 pb-8 text-[15px] leading-[1.7] text-secondary"></p>
+    <div class="hidden md:flex shrink-0 gap-5 px-5 py-3 border-t border-rule font-mono text-xs text-meta">
+      <span>↑↓ 选择</span><span>↵ 打开</span><span>esc 关闭</span>
+    </div>
+  </div>
+  <template id="search-row">
+    <a role="option" aria-selected="false" class="group px-3 py-3.5 rounded flex flex-col gap-1.5 text-ink hover:text-ink aria-selected:bg-tint">
+      <span class="flex justify-between items-baseline gap-4">
+        <span data-title class="text-[19px] group-aria-selected:text-accent"></span>
+        <time data-date class="shrink-0 font-mono text-xs text-meta"></time>
+      </span>
+      <span data-snippet class="text-[15px] leading-[1.7] text-secondary"></span>
+    </a>
+  </template>
+</dialog>

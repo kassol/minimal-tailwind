@@ -2,7 +2,27 @@
 {{- /* 防闪：首次绘制前应用手动选择的外观；未选择时不设 data-theme，交给 prefers-color-scheme */}}
 <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <meta name="viewport" content="width=device-width">
-<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" (cond (eq .Kind "404") "此页不在这里" .Title) site.Title }}{{ end }}</title>
+{{- $title := cond .IsHome site.Title (cond (eq .Kind "404") "此页不在这里" .Title) }}
+{{- /* 描述：文章用 frontmatter description（AI 总结），其他页用站点描述，站点描述为空时用标语 */}}
+{{- $desc := or .Params.description site.Params.description (delimit site.Params.tagline "，") }}
+<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" $title site.Title }}{{ end }}</title>
+<meta name="description" content="{{ $desc }}">
+{{- /* 分页列表页的 canonical 指向第一页（.Permalink）；这里不调用 .Paginator，否则不分页的页面也会生成 /page/N/ */}}
+{{- if ne .Kind "404" }}
+<link rel="canonical" href="{{ .Permalink }}">
+<meta property="og:url" content="{{ .Permalink }}">
+{{- end }}
+<meta property="og:title" content="{{ $title }}">
+<meta property="og:description" content="{{ $desc }}">
+<meta property="og:type" content="{{ if and .IsPage (eq .Section "posts") }}article{{ else }}website{{ end }}">
+<meta property="og:image" content="{{ "og-default.png" | absURL }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:site_name" content="{{ site.Title }}">
+<meta name="twitter:card" content="summary_large_image">
+{{- /* 无 JS 时隐藏搜索入口（页眉按钮、404 表单），避免点了没反应 */}}
+<noscript><style>[data-search-open],[data-search-form]{display:none!important}</style></noscript>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">

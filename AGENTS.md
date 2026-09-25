@@ -6,11 +6,12 @@
 
 ## 目录结构
 
-- `layouts/` - 模板。页面模板：`home.html`（Hero、最新、年轮分镜，读站点 `data/chapters.yaml`）、`section.html`、`page.html`、`taxonomy.html`、`term.html`、`archives.html`（站点 `content/archives.md` 以 `layout: archives` 选用）、`404.html`；外壳 `baseof.html`
-- `layouts/_partials/` - 组件（Hugo 只查找 `_partials/`）。`seal.html` 为 2×2 方印，页眉页脚共用；`post-list.html` 为文章列表，`section.html` 与 `term.html` 共用
+- `layouts/` - 模板。页面模板：`home.html`（Hero、最新、年轮分镜，读站点 `data/chapters.yaml`）、`section.html`、`page.html`、`taxonomy.html`、`term.html`、`archives.html`（站点 `content/archives.md` 以 `layout: archives` 选用）、`about.html`（站点 `content/about.md` 以 `layout: about` 选用）、`404.html`；外壳 `baseof.html`；`rss.xml` 覆盖 Hugo 内置 RSS
+- `layouts/_partials/` - 组件（Hugo 只查找 `_partials/`）。`seal.html` 为 2×2 方印，页眉页脚与关于页共用；`post-list.html` 为文章列表，`section.html` 与 `term.html` 共用；`search.html` 为搜索浮层（`baseof.html` 引入），`search-index.html` 生成其索引
+- `layouts/_shortcodes/` - `post-count.html`：文章总篇数，供站点内容页引用
 - `layouts/_default/_markup/` - Markdown 渲染钩子：`render-link.html`（外链新标签页 + ↗）、`render-image.html`（纸质照片 + 灯箱）
 - `assets/css/styles.css` - Tailwind 入口、设计 token（`--c-*` CSS 变量，明暗两套）、组件样式
-- `assets/js/main.js` - 外观切换、目录高亮、年轮点亮、GLightbox 初始化
+- `assets/js/main.js` - 外观切换、目录高亮、年轮点亮、搜索浮层、GLightbox 初始化
 - `static/fonts/` - 自托管的 IBM Plex Mono（拉丁子集 400/500）及其 OFL 许可
 
 ## 模块规范
@@ -19,7 +20,7 @@
 - 颜色只用设计 token，不写死十六进制值
 - 外观三态已启用：明暗 token 常驻，`head.html` 防闪脚本与页眉外观切换始终输出
 - 模板不写死叙事数据：章名、年份、代表作只从站点 `data/chapters.yaml` 读取，篇数与年度统计构建时计算
-- 站点身份从站点 params 读取：`seal`、`tagline`、`since`、`author`；favicon 由站点 `static/` 提供，主题只写 `<link>`
+- 站点身份从站点 params 读取：`seal`、`tagline`、`since`、`author`、`description`；favicon 与默认分享图 `og-default.png` 由站点 `static/` 提供，主题只写 `<link>` / `<meta>`
 - 不从 staticfile / bootcdn / bootcss / polyfill.io 等域名加载任何资源
 - Tailwind 配置在站点根目录的 `tailwind.config.ts`，其 `content` 会扫描本主题的 `layouts/` 与 `assets/`
 
@@ -32,6 +33,16 @@
 - IBM Plex Mono（`@fontsource/ibm-plex-mono` 的 woff2，只复制文件，OFL）
 
 ## 变更日志
+
+### 2026-09-25 阶段 5：搜索、关于页、分享元信息、RSS 摘要
+- 搜索：`_partials/search-index.html` 把全部文章的标题、日期、链接、AI 总结、正文纯文本输出为带指纹的 `search.<hash>.json`（`resources.FromString`，站点无需配置输出格式）；`_partials/search.html` 为 `<dialog>` 浮层，`main.js` 的 `initSearch` 首次打开时加载索引，不分词子串匹配（空格分隔多个词须全部出现），标题命中在前，其余按日期倒序；片段取正文首个命中处，关键词胭脂底 + 强调色字，选中行上改用 `muted/40`
+- 交互：页眉搜索按钮（桌面「搜索 ⌘K」，手机 44px 图标）、⌘K / Ctrl+K 打开、Esc 或点遮罩关闭（手机有「取消」）、↑↓ 选择、↵ 打开；输入框为 combobox + `aria-activedescendant`，输入法组合中不搜索、不响应方向键与回车；模态由原生 `showModal()` 提供，关闭后焦点回到打开者；`type=search` 输入框里的 Esc 由脚本直接关闭浮层（浏览器默认先清空内容）。无 JS 时 `head.html` 的 `<noscript>` 样式隐藏搜索入口
+- 404 页加入搜索表单，回车后在浮层中显示结果
+- 页眉右侧组允许换行：菜单增至 4 项并加入搜索按钮后，手机上菜单与外观切换、搜索、RSS 分两行，避免横向溢出
+- 新增 token `--c-scrim`（遮罩底色）与 `--shadow-dialog`（面板阴影），明暗两套
+- 新增 `about.html`（大号方印 + 标题，正文为站点 about.md 的 `<section>`，样式 `.about-body`）与 `_shortcodes/post-count.html`
+- `head.html`：输出 meta description（文章用 frontmatter `description`，其他页用站点描述，为空时用标语）、canonical、Open Graph（og:image 为站点 `static/og-default.png`）、`twitter:card`。分页列表页的 canonical 指向第一页，没有调用 `.Paginator`，避免不分页的页面生成 `/page/N/`
+- 新增 `rss.xml`：基于 Hugo 0.166.0 内置模板，只改 `<description>` 为 frontmatter `description`，没有时回退到摘要纯文本；不再含 `<figure>` 等 HTML，`/index.xml` 由约 616 KB 降到约 222 KB
 
 ### 2026-09-25 阶段 4 收尾
 - 纸质照片阴影改用 `--shadow-photo` token，暗色下加深（原阴影在暗色底上不可见）

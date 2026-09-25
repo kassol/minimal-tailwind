@@ -4,7 +4,7 @@
       {{ partial "seal.html" "w-8 h-8 p-0.5 rounded-[3px] text-[13px] leading-[14px] md:w-10 md:h-10 md:text-base md:leading-[18px]" }}
       <span class="text-lg md:text-[22px] tracking-[0.08em]">{{ site.Title }}</span>
     </a>
-    <div class="ml-auto flex items-center gap-2 md:gap-8">
+    <div class="ml-auto flex flex-wrap items-center justify-end gap-2 md:gap-8">
       <nav aria-label="主导航" class="flex items-center gap-1 md:gap-9 text-base md:text-[17px]">
         {{- range site.Menus.main }}
         <a href="{{ .URL }}" class="inline-flex items-center min-h-11 px-2 md:px-0 text-ink hover:text-accent">{{ .Name }}</a>
@@ -22,6 +22,12 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
           </button>
         </div>
+        {{- /* 搜索：桌面带「搜索 ⌘K」提示，手机为 44px 图标按钮；打开 search.html 的浮层 */}}
+        <button type="button" data-search-open aria-keyshortcuts="Meta+K Control+K" class="w-11 h-11 md:w-auto md:h-9 md:px-3 inline-flex items-center justify-center gap-2.5 md:border md:border-rule rounded text-sm text-meta hover:text-accent">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <span class="sr-only md:not-sr-only">搜索</span>
+          <kbd aria-hidden="true" class="hidden md:inline px-[5px] py-px border border-rule rounded-[3px] font-mono text-[11px]">⌘K</kbd>
+        </button>
         {{- with site.Home.OutputFormats.Get "rss" }}
         <a href="{{ .RelPermalink }}" aria-label="RSS 订阅" class="w-11 h-11 flex items-center justify-center text-meta hover:text-accent">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 5a14 14 0 0 1 14 14"/><path d="M5 11a8 8 0 0 1 8 8"/><circle cx="6" cy="18" r="1.2"/></svg>

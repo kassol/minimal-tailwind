@@ -1,0 +1,7 @@
+{{- /* 搜索索引：全部文章的标题 t、日期 d、链接 u、AI 总结 s、正文纯文本 c，发布为带指纹的 JSON 并返回其 URL。须经 partialCached 调用，整站只生成一次 */}}
+{{- $items := slice }}
+{{- range (site.GetPage "/posts").RegularPages }}
+  {{- $items = $items | append (dict "t" .Title "d" (.Date.Format "2006-01-02") "u" .RelPermalink "s" (.Params.description | default "") "c" (.Plain | replaceRE `\s+` " " | strings.TrimSpace)) }}
+{{- end }}
+{{- $r := resources.FromString "search.json" ($items | jsonify) | fingerprint }}
+{{- return $r.RelPermalink }}

@@ -22,6 +22,9 @@
     /* 纸质照片相框 */
     --c-frame: 255 255 255;
     --shadow-photo: 0 4px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* 搜索浮层：遮罩底色（按 45% 透明度使用）与面板阴影 */
+    --c-scrim: 31 27 24;
+    --shadow-dialog: 0 24px 64px rgba(31, 27, 24, 0.28), 0 2px 8px rgba(31, 27, 24, 0.12);
     /* 印章、主按钮底：明暗相同 */
     --c-accent-fill: 185 28 28;
     --c-on-accent-fill: 250 248 244;
@@ -43,6 +46,8 @@
     --c-muted: 91 52 49;
     --c-frame: 233 227 218;
     --shadow-photo: 0 6px 14px rgba(0, 0, 0, 0.5);
+    --c-scrim: 0 0 0;
+    --shadow-dialog: 0 24px 64px rgba(0, 0, 0, 0.6);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -61,6 +66,8 @@
       --c-muted: 91 52 49;
       --c-frame: 233 227 218;
       --shadow-photo: 0 6px 14px rgba(0, 0, 0, 0.5);
+      --c-scrim: 0 0 0;
+      --shadow-dialog: 0 24px 64px rgba(0, 0, 0, 0.6);
     }
   }
 
@@ -245,6 +252,48 @@
       transform: none;
       transition: none;
     }
+  }
+
+  /* 搜索浮层（search.html）：打开时页面不滚动；关键词胭脂底 + 强调色字，选中行本身是胭脂底，关键词改用图表弱色加深 */
+  html:has(#search[open]) {
+    overflow: hidden;
+  }
+
+  #search mark {
+    @apply px-0.5 bg-tint text-accent;
+  }
+
+  #search [aria-selected="true"] mark {
+    @apply bg-muted/40;
+  }
+
+  /* 关于页（about.html）：站点 about.md 的每个 <section> 为「h2 标签 | 内容」两栏 */
+  .about-body section {
+    @apply grid gap-4 pt-8 pb-12 border-t border-strong lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-16 lg:pt-10 lg:pb-[72px];
+  }
+
+  .about-body h2 {
+    @apply text-base tracking-[0.1em] text-accent;
+  }
+
+  .about-body section > div {
+    @apply max-w-[688px] flex flex-col gap-7;
+  }
+
+  .about-body p {
+    @apply text-[17px] leading-[2] text-body lg:text-[19px];
+  }
+
+  .about-body dl {
+    @apply grid grid-cols-[88px_minmax(0,1fr)] gap-x-6 gap-y-3.5 text-[17px] lg:grid-cols-[120px_minmax(0,1fr)];
+  }
+
+  .about-body dt {
+    @apply text-meta;
+  }
+
+  .about-body dd a {
+    @apply font-mono text-[15px];
   }
 
   /* 减少动态效果：全站过渡与动画归零（照片旋转另在各自规则里取消） */
