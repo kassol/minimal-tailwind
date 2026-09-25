@@ -7,18 +7,18 @@
 ## 目录结构
 
 - `layouts/` - 模板。页面模板：`home.html`（Hero、最新、年轮分镜，读站点 `data/chapters.yaml`）、`section.html`、`page.html`、`taxonomy.html`、`term.html`、`archives.html`（站点 `content/archives.md` 以 `layout: archives` 选用）、`about.html`（站点 `content/about.md` 以 `layout: about` 选用）、`404.html`；外壳 `baseof.html`；`rss.xml` 覆盖 Hugo 内置 RSS
-- `layouts/_partials/` - 组件（Hugo 只查找 `_partials/`）。`seal.html` 为 2×2 方印，页眉页脚与关于页共用；`post-list.html` 为文章列表，`section.html` 与 `term.html` 共用；`search.html` 为搜索浮层（`baseof.html` 引入），`search-index.html` 生成其索引
+- `layouts/_partials/` - 组件（Hugo 只查找 `_partials/`）。`seal.html` 为 2×2 方印，页眉页脚与关于页共用；`theme-toggle.html` 为外观三态切换，桌面页眉与手机页脚共用；`post-list.html` 为文章列表，`section.html` 与 `term.html` 共用；`search.html` 为搜索浮层（`baseof.html` 引入），`search-index.html` 生成其索引
 - `layouts/_shortcodes/` - `post-count.html`：文章总篇数，供站点内容页引用
 - `layouts/_default/_markup/` - Markdown 渲染钩子：`render-link.html`（外链新标签页 + ↗）、`render-image.html`（纸质照片 + 灯箱）
 - `assets/css/styles.css` - Tailwind 入口、设计 token（`--c-*` CSS 变量，明暗两套）、组件样式
-- `assets/js/main.js` - 外观切换、目录高亮、年轮点亮、搜索浮层、GLightbox 初始化
+- `assets/js/main.js` - 外观切换、手机菜单、目录高亮、年轮点亮、搜索浮层、GLightbox 初始化
 - `static/fonts/` - 自托管的 IBM Plex Mono（拉丁子集 400/500）及其 OFL 许可
 
 ## 模块规范
 
 - 所有页面模板定义 `{{ define "main" }}`，继承 `baseof.html`
 - 颜色只用设计 token，不写死十六进制值
-- 外观三态已启用：明暗 token 常驻，`head.html` 防闪脚本与页眉外观切换始终输出
+- 外观三态已启用：明暗 token 常驻，`head.html` 防闪脚本与外观切换始终输出（桌面在页眉，手机在页脚）
 - 模板不写死叙事数据：章名、年份、代表作只从站点 `data/chapters.yaml` 读取，篇数与年度统计构建时计算
 - 站点身份从站点 params 读取：`seal`、`tagline`、`since`、`author`、`description`；favicon 与默认分享图 `og-default.png` 由站点 `static/` 提供，主题只写 `<link>` / `<meta>`
 - 不从 staticfile / bootcdn / bootcss / polyfill.io 等域名加载任何资源
@@ -33,6 +33,12 @@
 - IBM Plex Mono（`@fontsource/ibm-plex-mono` 的 woff2，只复制文件，OFL）
 
 ## 变更日志
+
+### 2026-09-25 手机页眉
+- 手机（<768px）页眉只留方印 + 站名与两个 44px 图标按钮：搜索（打开现有浮层）、菜单。导航、外观切换、RSS 移出手机页眉；桌面页眉不变。替代阶段 5「页眉右侧组允许换行、手机上分两行」的做法
+- 菜单：`header.html` 内的原生 popover（`#site-menu`，按钮 `popovertarget`），点外部与 Esc 关闭、关闭后焦点回到菜单按钮均由浏览器处理；面板为纸色底、细线分隔、52px 行高，列出 `site.Menus.main` 与 RSS，当前页（`RelPermalink` 以菜单 URL 开头，文章页亮「文章」）强调色 + 圆点并带 `aria-current`。`main.js` 的 `initMenu` 在打开前把面板贴到页眉下沿，并同步按钮 `aria-expanded`。不支持 popover 的浏览器（Safari 17 以前）菜单按钮无效
+- 外观切换抽成 `_partials/theme-toggle.html`（按钮尺寸与图标边长由调用方传入）：桌面页眉 32px，手机页脚 44px；`initThemeToggle` 本就对所有 `[data-theme-toggle]` 组同步 `aria-pressed`，脚本未改
+- 手机页脚按设计稿 MobileHome：外观切换 /「RSS 归档 分类 关于」/「© 起止年 站名 · 由 Hugo 驱动」三行；桌面页脚不变
 
 ### 2026-09-25 阶段 5 收尾
 - 站点 RSS 只收 posts 区文章（关于、归档页恢复进入页面集合后不混入 feed）；频道标题与描述改为中文

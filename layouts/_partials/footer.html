@@ -1,5 +1,16 @@
 <footer class="w-full mt-16 border-t border-rule">
-  <div class="mx-auto box-content max-w-[1120px] px-5 pt-10 pb-14 flex flex-col gap-4 md:flex-row md:items-center md:justify-between text-sm text-meta">
+  {{- /* 手机：外观切换、链接、版权三行 */}}
+  <div class="md:hidden px-5 pt-8 pb-10 flex flex-col items-start gap-4 text-[13px] text-meta">
+    {{ partial "theme-toggle.html" (dict "btn" "w-11 h-11" "icon" 18) }}
+    <span class="flex flex-wrap gap-x-5">
+      {{- with site.Home.OutputFormats.Get "rss" }}<a href="{{ .RelPermalink }}" class="inline-flex items-center min-h-11">RSS</a>{{ end }}
+      {{- range slice "/archives" "/categories" "/about" }}
+      {{- with site.GetPage . }}<a href="{{ .RelPermalink }}" class="inline-flex items-center min-h-11">{{ .Title }}</a>{{ end }}
+      {{- end }}
+    </span>
+    <span>&copy; {{ site.Params.since }}—{{ now.Format "2006" }} {{ site.Title }} · 由 <a href="https://gohugo.io/">Hugo</a> 驱动</span>
+  </div>
+  <div class="hidden md:flex mx-auto box-content max-w-[1120px] px-5 pt-10 pb-14 flex-row items-center justify-between text-sm text-meta">
     <span class="flex items-center gap-3">
       {{ partial "seal.html" "w-6 h-6 p-px rounded-sm text-[10px] leading-[11px]" }}
       <span>&copy; {{ site.Params.since }}—{{ now.Format "2006" }} {{ site.Title }}</span>
