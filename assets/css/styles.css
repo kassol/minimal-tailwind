@@ -21,6 +21,7 @@
     --c-muted: 221 179 174;
     /* 纸质照片相框 */
     --c-frame: 255 255 255;
+    --shadow-photo: 0 4px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
     /* 印章、主按钮底：明暗相同 */
     --c-accent-fill: 185 28 28;
     --c-on-accent-fill: 250 248 244;
@@ -41,6 +42,7 @@
     --c-accent-hover: 245 138 134;
     --c-muted: 91 52 49;
     --c-frame: 233 227 218;
+    --shadow-photo: 0 6px 14px rgba(0, 0, 0, 0.5);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -58,6 +60,7 @@
       --c-accent-hover: 245 138 134;
       --c-muted: 91 52 49;
       --c-frame: 233 227 218;
+      --shadow-photo: 0 6px 14px rgba(0, 0, 0, 0.5);
     }
   }
 
@@ -133,7 +136,7 @@
   .chapter-photo {
     @apply block shrink-0 w-[180px] h-[135px] p-2 rounded-sm lg:w-60 lg:h-[180px] lg:p-2.5;
     background: rgb(var(--c-frame));
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-photo);
     transform: rotate(-2deg);
     transition: transform 0.3s ease;
   }
@@ -152,12 +155,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .year-bar,
-    .chapter-tone,
-    .chapter-num {
-      transition: none;
-    }
-
     .chapter-photo,
     .chapter-photo + .chapter-photo {
       transform: none;
@@ -217,7 +214,7 @@
   .prose .photo > a {
     @apply block w-full max-w-[520px] p-3 rounded-sm cursor-zoom-in;
     background: rgb(var(--c-frame));
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-photo);
     transform: rotate(-0.8deg);
     transition: transform 0.3s ease;
   }
@@ -247,6 +244,14 @@
     .prose .photo:nth-of-type(even) > a {
       transform: none;
       transition: none;
+    }
+  }
+
+  /* 减少动态效果：全站过渡与动画归零（照片旋转另在各自规则里取消） */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 0s !important;
+      animation-duration: 0s !important;
     }
   }
 
