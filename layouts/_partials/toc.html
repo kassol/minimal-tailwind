@@ -2,7 +2,7 @@
 {{- $n := len (findRE "<a " .TableOfContents) }}
 {{- if $n }}
 <aside id="toc-nav" aria-label="目录" class="toc mt-5 lg:mt-0 lg:col-start-2 lg:row-start-2 lg:row-span-3">
-  <button id="toc-toggle" type="button" aria-expanded="false" aria-controls="toc-content" class="lg:hidden w-full min-h-12 px-4 flex justify-between items-center border border-rule rounded text-[15px] text-ink">
+  <button id="toc-toggle" type="button" aria-expanded="false" aria-controls="toc-content" class="lg:hidden w-full min-h-12 px-4 flex justify-between items-center border border-rule rounded-sm text-[15px] text-ink">
     <span>目录 · {{ $n }} 节</span><span aria-hidden="true" class="text-meta">▾</span>
   </button>
   <div id="toc-content" class="hidden lg:block mt-3 lg:mt-0 lg:sticky lg:top-8">

@@ -2,7 +2,7 @@
 {{- /* 关于页：站点 content/about.md 以 layout: about 选用。页头为大号方印 + 标题；正文由 about.md 的 <section>（h2 + div）组成，样式见 styles.css 的 .about-body */}}
 <div class="w-full max-w-[1120px] mx-auto px-1 lg:px-0">
   <header class="pb-10 lg:pt-8 lg:pb-[72px] flex items-end gap-6 lg:grid lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-16">
-    {{ partial "seal.html" "w-20 h-20 p-[3px] rounded text-[33px] leading-[37px] lg:w-[120px] lg:h-[120px] lg:p-1 lg:rounded-md lg:text-[50px] lg:leading-[56px]" }}
+    {{ partial "seal.html" "w-20 h-20 p-[3px] rounded-sm text-[33px] leading-[37px] lg:w-[120px] lg:h-[120px] lg:p-1 lg:rounded-md lg:text-[50px] lg:leading-[56px]" }}
     <h1 class="text-[56px] lg:text-[96px] leading-none tracking-[0.06em] text-ink">{{ .Title }}</h1>
   </header>
   <div class="about-body">

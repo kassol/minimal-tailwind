@@ -1,11 +1,68 @@
 @import url('https://ik.imagekit.io/fonts121/packages/jhlst/dist/%E4%BA%AC%E8%8F%AF%E8%80%81%E5%AE%8B%E4%BD%93v2_002/result.css?t_3=1452');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* 只扫描 Hugo 构建统计：它列出全部模板产出的 class，被 .gitignore 忽略，须显式声明（Hugo css.TailwindCSS 文档） */
+@import "tailwindcss" source(none);
+@source "hugo_stats.json";
+@plugin "@tailwindcss/typography";
+
+/* 设计 token 映射为颜色名：值在下方 :root 的 --c-*（明暗两套）。inline 让工具类直接取 rgb(var(--c-*))，随明暗切换；透明度修饰（bg-muted/40）照常可用 */
+@theme inline {
+  --color-paper: rgb(var(--c-paper));
+  --color-ink: rgb(var(--c-ink));
+  --color-body: rgb(var(--c-body));
+  --color-secondary: rgb(var(--c-secondary));
+  --color-meta: rgb(var(--c-meta));
+  --color-rule: rgb(var(--c-rule));
+  --color-strong: rgb(var(--c-strong));
+  --color-tint: rgb(var(--c-tint));
+  --color-accent: rgb(var(--c-accent));
+  --color-accent-hover: rgb(var(--c-accent-hover));
+  --color-accent-fill: rgb(var(--c-accent-fill));
+  --color-on-accent-fill: rgb(var(--c-on-accent-fill));
+  --color-muted: rgb(var(--c-muted));
+}
+
+@theme {
+  --font-sans: KingHwa_OldSong, "Songti SC", STSong, "Noto Serif SC", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* 字号自带的行高用 Tailwind 3 的 rem 值：4 改成了无单位比例，子元素继承后会按自身字号重算（如 text-lg 里的 text-[13px] 从 28px 变成 20px） */
+  --text-xs--line-height: 1rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+}
+
+/* 正文排版插件的颜色全部指向设计 token，随明暗切换；引用块 2px 细线、不斜体。与插件的 .prose 同名，编译后排在插件规则之后，同优先级下覆盖它 */
+@utility prose {
+  --tw-prose-body: rgb(var(--c-body));
+  --tw-prose-headings: rgb(var(--c-ink));
+  --tw-prose-lead: rgb(var(--c-secondary));
+  --tw-prose-links: rgb(var(--c-accent));
+  --tw-prose-bold: rgb(var(--c-ink));
+  --tw-prose-counters: rgb(var(--c-meta));
+  --tw-prose-bullets: rgb(var(--c-muted));
+  --tw-prose-hr: rgb(var(--c-rule));
+  --tw-prose-quotes: rgb(var(--c-meta));
+  --tw-prose-quote-borders: rgb(var(--c-strong));
+  --tw-prose-captions: rgb(var(--c-meta));
+  --tw-prose-code: rgb(var(--c-accent));
+  --tw-prose-pre-code: rgb(var(--c-body));
+  --tw-prose-pre-bg: rgb(var(--c-tint));
+  --tw-prose-th-borders: rgb(var(--c-rule));
+  --tw-prose-td-borders: rgb(var(--c-rule));
+
+  & :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    border-inline-start-width: 2px;
+    font-style: normal;
+  }
+}
 
 @layer base {
-  /* 设计 token（DESIGN.md「色彩」），RGB 通道便于 Tailwind 透明度；tailwind.config.ts 映射为颜色名 */
+  /* 设计 token（DESIGN.md「色彩」），RGB 通道，组件样式里可写 rgb(var(--c-*) / α)；文件开头的 @theme 映射为颜色名 */
   :root {
     color-scheme: light;
     --c-paper: 250 248 244;
@@ -87,13 +144,19 @@
     src: url('/fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
   }
 
-  /* 京華老宋体只有常规体：全站字重 400，层级只靠字号与颜色。font-family 由 tailwind.config.ts 的 fontFamily.sans 经 preflight 作用于 html */
+  /* 京華老宋体只有常规体：全站字重 400，层级只靠字号与颜色。font-family 由文件开头 @theme 的 --font-sans 经 preflight 作用于 html */
   html, h1, h2, h3, h4, h5, h6, b, strong, th {
     font-weight: 400;
   }
 
   body {
     @apply bg-paper text-body;
+  }
+
+  /* Tailwind 4 的 preflight 把按钮光标改成 default，恢复 3 的手型 */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 
   /* 锚点跳转（目录、首页章节）平滑滚动；减少动态效果时直接跳 */
@@ -108,7 +171,7 @@
   }
   
   code {
-    @apply bg-tint text-body px-1 py-0.5 rounded text-sm font-mono;
+    @apply bg-tint text-body px-1 py-0.5 rounded-sm text-sm font-mono;
   }
   
   pre {
@@ -144,7 +207,7 @@
 
   /* 分镜里的纸质照片拼贴：与文章页 .photo 同样的相框与阴影，第二张错位叠压 */
   .chapter-photo {
-    @apply block shrink-0 w-[180px] h-[135px] p-2 rounded-sm lg:w-60 lg:h-[180px] lg:p-2.5;
+    @apply block shrink-0 w-[180px] h-[135px] p-2 rounded-xs lg:w-60 lg:h-[180px] lg:p-2.5;
     background: rgb(var(--c-frame));
     box-shadow: var(--shadow-photo);
     transform: rotate(-2deg);
@@ -185,8 +248,9 @@
     @apply block -ml-px border-l border-transparent py-2.5 lg:py-1.5 pl-4 text-[15px] leading-snug text-secondary hover:text-accent;
   }
 
+  /* leading-5：Tailwind 4 里 .toc a 的 leading-snug 会压过 text-sm 自带的行高，按 3 的效果显式写出 20px */
   .toc ul ul a {
-    @apply pl-8 text-sm text-meta;
+    @apply pl-8 text-sm leading-5 text-meta;
   }
 
   /* 只有 H3 的文章：Hugo 会包一层没有链接的 <li>，这一层不缩进 */
@@ -219,47 +283,6 @@
     content: "↗";
     content: "↗" / "";
     margin-left: 0.15em;
-  }
-
-  /* 纸质照片（render-image.html）：相框在 <a> 上，4:3 画框，奇偶交替旋转，悬停转正 */
-  .prose .photo {
-    @apply my-8 flex flex-col items-start gap-3;
-  }
-
-  .prose .photo > a {
-    @apply block w-full max-w-[520px] p-3 rounded-sm cursor-zoom-in;
-    background: rgb(var(--c-frame));
-    box-shadow: var(--shadow-photo);
-    transform: rotate(-0.8deg);
-    transition: transform 0.3s ease;
-  }
-
-  .prose .photo img {
-    @apply m-0 block w-full aspect-[4/3] object-cover;
-  }
-
-  .prose .photo figcaption {
-    @apply m-0 px-4 font-mono text-xs text-meta;
-  }
-
-  .prose .photo:nth-of-type(even) {
-    @apply items-end;
-  }
-
-  .prose .photo:nth-of-type(even) > a {
-    transform: rotate(0.6deg);
-  }
-
-  .prose .photo > a:hover {
-    transform: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .prose .photo > a,
-    .prose .photo:nth-of-type(even) > a {
-      transform: none;
-      transition: none;
-    }
   }
 
   /* 搜索浮层（search.html）：打开时页面不滚动；关键词胭脂底 + 强调色字，选中行本身是胭脂底，关键词改用图表弱色加深 */
@@ -319,10 +342,53 @@
   .prose blockquote p:after {
     content: none !important;
   }
+}
 
-  /* 禁用 prose 插件给行内代码加的反引号 */
-  .prose code::before,
-  .prose code::after {
-    content: none;
+/* 以下覆盖正文排版插件对 .prose 后代的样式。插件规则在 utilities 层，components 层的规则不论选择器多具体都会输给它，所以不放进任何层 */
+
+/* 纸质照片（render-image.html）：相框在 <a> 上，4:3 画框，奇偶交替旋转，悬停转正 */
+.prose .photo {
+  @apply my-8 flex flex-col items-start gap-3;
+}
+
+.prose .photo > a {
+  @apply block w-full max-w-[520px] p-3 rounded-xs cursor-zoom-in;
+  background: rgb(var(--c-frame));
+  box-shadow: var(--shadow-photo);
+  transform: rotate(-0.8deg);
+  transition: transform 0.3s ease;
+}
+
+.prose .photo img {
+  @apply m-0 block w-full aspect-[4/3] object-cover;
+}
+
+.prose .photo figcaption {
+  @apply m-0 px-4 font-mono text-xs text-meta;
+}
+
+.prose .photo:nth-of-type(even) {
+  @apply items-end;
+}
+
+.prose .photo:nth-of-type(even) > a {
+  transform: rotate(0.6deg);
+}
+
+.prose .photo > a:hover {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prose .photo > a,
+  .prose .photo:nth-of-type(even) > a {
+    transform: none;
+    transition: none;
   }
+}
+
+/* 禁用 prose 插件给行内代码加的反引号 */
+.prose code::before,
+.prose code::after {
+  content: none;
 }

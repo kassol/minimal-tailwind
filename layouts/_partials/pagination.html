@@ -5,7 +5,7 @@
 {{- $total := .TotalPages }}
 {{- /* 首页与末页时多显示一页，与另一端的长度相当 */}}
 {{- $w := cond (or (eq $cur 1) (eq $cur $total)) 2 1 }}
-{{- $box := "w-11 h-11 flex items-center justify-center rounded" }}
+{{- $box := "w-11 h-11 flex items-center justify-center rounded-sm" }}
 {{- $edge := "h-11 px-3.5 flex items-center font-sans text-[15px]" }}
 <nav aria-label="分页" class="mt-12 lg:mt-16 flex flex-wrap justify-center items-center gap-2 font-mono text-sm">
   {{- if .HasPrev }}

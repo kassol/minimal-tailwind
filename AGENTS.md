@@ -10,7 +10,7 @@
 - `layouts/_partials/` - 组件（Hugo 只查找 `_partials/`）。`seal.html` 为 2×2 方印，页眉页脚与关于页共用；`theme-toggle.html` 为外观三态切换，桌面页眉与手机页脚共用；`post-list.html` 为文章列表，`section.html` 与 `term.html` 共用；`search.html` 为搜索浮层（`baseof.html` 引入），`search-index.html` 生成其索引
 - `layouts/_shortcodes/` - `post-count.html`：文章总篇数，供站点内容页引用
 - `layouts/_markup/` - Markdown 渲染钩子：`render-link.html`（外链新标签页 + ↗）、`render-image.html`（纸质照片 + 灯箱）
-- `assets/css/styles.css` - Tailwind 入口、设计 token（`--c-*` CSS 变量，明暗两套）、组件样式
+- `assets/css/styles.css` - Tailwind 4 入口与全部配置（`@source`、`@plugin`、`@theme` 颜色与字体映射、`@utility prose` 正文 token）、设计 token（`--c-*` CSS 变量，明暗两套）、组件样式
 - `assets/js/main.js` - 外观切换、手机菜单、目录高亮、年轮点亮、搜索浮层、GLightbox 初始化
 - `static/fonts/` - 自托管的 IBM Plex Mono（拉丁子集 400/500）及其 OFL 许可
 
@@ -22,17 +22,27 @@
 - 模板不写死叙事数据：章名、年份、代表作只从站点 `data/chapters.yaml` 读取，篇数与年度统计构建时计算
 - 站点身份从站点 params 读取：`seal`、`tagline`、`since`、`author`、`description`；favicon 与默认分享图 `og-default.png` 由站点 `static/` 提供，主题只写 `<link>` / `<meta>`
 - 不从 staticfile / bootcdn / bootcss / polyfill.io 等域名加载任何资源
-- Tailwind 配置在站点根目录的 `tailwind.config.ts`，其 `content` 会扫描本主题的 `layouts/` 与 `assets/`
+- Tailwind 配置只在 `styles.css`，不用 JS 配置文件；类名只从站点的 `hugo_stats.json` 扫描（`source(none)` 关闭自动扫描），所以类名须完整出现在模板产出的 HTML 里，不能在 JS 里拼接
+- 覆盖 `.prose` 后代的规则放在 `styles.css` 末尾、不进任何层：排版插件在 utilities 层，放进 `@layer components` 会被它压过
 
 ## 依赖关系
 
-- Hugo ≥ 0.146（跟随最新版），不依赖 extended：只用 PostCSS、js.Build、fingerprint，没有 Sass 与图片处理
-- 站点根目录的 PostCSS + Tailwind CSS 3 + @tailwindcss/typography
+- Hugo ≥ 0.146（跟随最新版），不依赖 extended：只用 css.TailwindCSS、js.Build、fingerprint、templates.Defer，没有 Sass 与图片处理
+- 站点 `node_modules` 的 Tailwind CSS 4（`tailwindcss` + `@tailwindcss/cli`）+ @tailwindcss/typography；站点须开启 `buildStats`、把 `hugo_stats.json` 挂载到 `assets/notwatching/`、在 `security.exec.allow` 放行 `tailwindcss`（见站点 `hugo.toml`）
+- 浏览器下限 Safari 16.4+ / Chrome 111+ / Firefox 128+（Tailwind 4 的要求）
 - GLightbox 3.3.1（jsDelivr CDN，锁定版本 + SRI；升级时重算 `head.html` 里的 integrity）
 - 京華老宋体 webfont（imagekit CSS）
 - IBM Plex Mono（`@fontsource/ibm-plex-mono` 的 woff2，只复制文件，OFL）
 
 ## 变更日志
+
+### 2026-09-26 Tailwind CSS 3 → 4
+- `head/css.html` 改用 `css.TailwindCSS`（生产构建由 Tailwind 压缩，保留 fingerprint + SRI）；`head.html` 用 `templates.Defer` 调用它，全部页面渲染完、`hugo_stats.json` 写好后再编译，首次构建即得到完整 CSS
+- `styles.css`：`@tailwind` 三行换成 `@import "tailwindcss" source(none)` + `@source "hugo_stats.json"` + `@plugin`；原站点 `tailwind.config.ts` 的颜色映射改为 `@theme inline`（值仍是 `rgb(var(--c-*))`，透明度修饰照常可用），字体为 `@theme`，正文排版插件的颜色与引用块样式改为 `@utility prose`（编译后排在插件规则之后）
+- 保持与迁移前一致的补丁：`text-xs`…`text-4xl` 的行高改回 3 的 rem 值（4 为无单位比例，子元素继承后按自身字号重算，如归档行的日期行高 28px → 20px）；`.toc ul ul a` 显式 `leading-5`（4 里 `leading-snug` 压过 `text-sm` 的行高）；按钮恢复手型光标（4 的 preflight 改为 default）
+- 纸质照片 `.photo` 与行内代码去反引号两组规则移出 `@layer components`，放在文件末尾不进层：插件在 utilities 层，原位置会让图片边距、图注样式、反引号全部回到插件默认
+- 类名改名：`rounded` → `rounded-sm`、`rounded-sm` → `rounded-xs`（半径不变）、`outline-none` → `outline-hidden`
+- 行为变化（未回退）：悬停样式只在支持悬停的设备生效（4 的默认，手机上点按后不再残留悬停色）；`prose-a:hover:text-accent-hover` 在 3 里实际编译为「悬停整个正文时全部链接变色」，4 按从左到右堆叠，变为只有被悬停的链接变色，与 2026-09-25 的本意一致
 
 ### 2026-09-25 性能、SEO 与可访问性修整
 - `head.html`：GLightbox 锁定 3.3.1 并加 SRI，只在正文含 `data-glightbox` 的页面加载，脚本 `defer`；`main.js` 也 `defer`（两者按文档顺序在 DOMContentLoaded 前执行）。viewport 加 `initial-scale=1`；分页第 2 页起标题加「· 第 N 页」；全站 RSS 自动发现；文章页输出 `article:published_time`，og:image 用正文第一张图（没有图用 `og-default.png`，只有默认图带宽高）

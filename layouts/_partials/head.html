@@ -45,7 +45,7 @@
 {{- with site.Home.OutputFormats.Get "rss" }}
 <link rel="alternate" type="application/rss+xml" title="{{ site.Title }}" href="{{ .Permalink }}">
 {{- end }}
-{{ partialCached "head/css.html" . }}
+{{ with (templates.Defer (dict "key" "global")) }}{{ partial "head/css.html" . }}{{ end }}
 {{ partialCached "head/js.html" . }}
 {{- /* GLightbox：只在正文有灯箱图片（render-image.html 输出 data-glightbox）的页面加载；defer 顺序在 main.js 之后，两者都在 DOMContentLoaded 前执行 */}}
 {{- if strings.Contains .Content "data-glightbox" }}
