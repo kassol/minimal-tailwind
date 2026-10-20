@@ -36,6 +36,9 @@
 
 ## 变更日志
 
+### 2026-10-20 Google Analytics
+- `head.html` 在生产构建（`hugo.IsProduction`）调用 Hugo 内置 `google_analytics.html`；ID 由站点 `services.googleAnalytics.ID` 提供，未配置时不输出；`hugo server` 不上报
+
 ### 2026-09-26 Tailwind CSS 3 → 4
 - `head/css.html` 改用 `css.TailwindCSS`（生产构建由 Tailwind 压缩，保留 fingerprint + SRI）；`head.html` 用 `templates.Defer` 调用它，全部页面渲染完、`hugo_stats.json` 写好后再编译，首次构建即得到完整 CSS
 - `styles.css`：`@tailwind` 三行换成 `@import "tailwindcss" source(none)` + `@source "hugo_stats.json"` + `@plugin`；原站点 `tailwind.config.ts` 的颜色映射改为 `@theme inline`（值仍是 `rgb(var(--c-*))`，透明度修饰照常可用），字体为 `@theme`，正文排版插件的颜色与引用块样式改为 `@utility prose`（编译后排在插件规则之后）
