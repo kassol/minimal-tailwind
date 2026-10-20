@@ -2,6 +2,8 @@
 {{- /* 防闪：首次绘制前应用手动选择的外观；未选择时不设 data-theme，交给 prefers-color-scheme */}}
 <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{{- /* GA 只在生产构建输出，hugo server（development 环境）不上报；ID 在站点 hugo.toml 的 services.googleAnalytics */}}
+{{- if hugo.IsProduction }}{{ partial "google_analytics.html" . }}{{ end }}
 {{- $title := cond .IsHome site.Title (cond (eq .Kind "404") "此页不在这里" .Title) }}
 {{- $isPost := and .IsPage (eq .Section "posts") }}
 {{- /* 分页列表（文章列表、分类详情）的 canonical 指向当前页码，第 2 页起标题加页码；只对这两类调用 .Paginator，它们的模板本就分页，不会给其他页面多生成 /page/N/ */}}
