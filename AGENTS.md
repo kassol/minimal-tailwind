@@ -36,6 +36,9 @@
 
 ## 变更日志
 
+### 2026-10-21 结构化数据
+- `head.html`：首页输出 `WebSite` JSON-LD（站名、地址、描述），文章页输出 `BlogPosting` JSON-LD（标题、描述、发布/修改时间、作者链到关于页、分享图、canonical）与 `article:modified_time`；修改时间取 `.Lastmod`，没有 lastmod 时等于发布时间。其他页面不输出
+
 ### 2026-10-20 Google Analytics
 - `head.html` 在生产构建（`hugo.IsProduction`）调用 Hugo 内置 `google_analytics.html`；ID 由站点 `services.googleAnalytics.ID` 提供，未配置时不输出；`hugo server` 不上报
 
